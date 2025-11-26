@@ -1,0 +1,32 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Scripts
+*.ps1
+
+# AWS/CloudFormation
+*.yml
+aws-cloudfront-s3.yml
+
+# Nginx conf - DO NOT EXCLUDE (needed in Dockerfile)
+# nginx.conf
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.log
+*.tmp
+

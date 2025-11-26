@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="style.css">
+  <title>Brick Breaker</title>
+  <meta id="unity-product" data-value="Brick Breaker">
+  <meta id="unity-company" data-value="Studio Arcade">
+  <meta id="unity-version" data-value="1.0">
+
+  <style>
+    canvas:focus { outline: none; }
+  </style>
+
+    <!-- GA4 Script -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1FKDS183PH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1FKDS183PH');
+  </script>
+</head>
+
+<body>
+  <!-- 🔹 Loading Screen -->
+  <div id="loader">
+    <div id="logo-container">
+      <img id="logo" src="Images/logo.png" alt="Logo">
+    </div>
+    <div id="bar">
+      <div id="bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- 🔹 Unity Canvas -->
+  <canvas id="unity-canvas" tabindex="-1"></canvas>
+
+  <!-- 🔹 Rotate Overlay -->
+  <div id="rotate-overlay">
+    <div id="rotate-content">
+      <img id="rotate-icon" src="Images/rotatePhone.png" alt="Rotate phone" />
+      <p>Please rotate your device<br>to portrait mode</p>
+    </div>
+  </div>
+
+
+<script>
+
+  GameName = document.getElementById("unity-product").dataset.value
+//-----------Analytics Call
+function OnUnitySendGameAnalytics(eventName, data) {
+    if (window.gtag) {
+      gtag('event', eventName, data);
+    } else {
+      console.warn("gtag not available");
+    }
+}
+
+function OnUnitySendScore(score, playtime,isRepeatUser) {
+    console.log("[HTML] Unity sent score and product name", score , GameName);
+    
+    // Send to Google Analytics
+    gtag('event', 'game_session_end', {
+    game_id: GameName,
+    duration_seconds: playtime,
+    repeat_user: isRepeatUser 
+  }); 
+
+  if(isRepeatUser){
+    gtag('event', 'Replay_Game', {game_id: GameName});
+  }
+
+    gtag('event', 'Game_Closed', {game_id: GameName});
+    
+    // 🎮 NEW: Send to Uber Arcade backend
+    if (window.OnGameComplete) {
+      console.log('[Unity Bridge] Calling OnGameComplete with score:', score);
+      window.OnGameComplete('brick_breaker', score);
+    } else {
+      console.error('[Unity Bridge] OnGameComplete function not found!');
+    }
+}
+
+function OnUnityShowAd() {
+    console.log("[HTML] Unity requested ad");
+}
+
+function OnUnityReceivePlayerData(name, score) {
+    console.log(`[HTML] Unity sent player data: ${name}, ${score}`);
+}
+
+
+
+
+// // Call Unity from HTML
+// function PauseUnity() {
+//     unityInstance.SendMessage('WebGLBridge', 'PauseGame');
+// }
+
+// function ResumeUnity() {
+//     unityInstance.SendMessage('WebGLBridge', 'ResumeGame');
+// }
+
+// function SetUnityPlayerName(name) {
+//     unityInstance.SendMessage('WebGLBridge', 'SetPlayerName', name);
+// }
+</script>
+
+
+  <!-- 🎮 Uber Arcade Integration -->
+  <script src="../../js/access-control.js"></script>
+  <script src="../../js/arcade-api.js"></script>
+  <script src="../../js/session-timer.js"></script>
+  <script src="../unity-integration.js"></script>
+
+  <!-- 🔹 Unity Loader Script -->
+  <script src="Build/Build.loader.js"></script>
+  <script>
+    const canvas = document.querySelector("#unity-canvas");
+    const loader = document.querySelector("#loader");
+    const barFill = document.querySelector("#bar-fill");
+    const rotateOverlay = document.getElementById("rotate-overlay");
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    // unityInstance is declared in unity-integration.js
+    let unityLoaded = false;
+
+    // 🔹 Resize Canvas for mobile/desktop
+    function resizeCanvas() {
+      if (isMobile) {
+        canvas.style.position = "fixed";
+        canvas.style.top = "0";
+        canvas.style.left = "0";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.transform = "none";
+      } else {
+        const aspect = 9 / 16;
+        let w = window.innerWidth;
+        let h = window.innerHeight;
+        if (w / h > aspect) w = h * aspect;
+        else h = w / aspect;
+
+        canvas.style.position = "absolute";
+        canvas.style.width = `${w}px`;
+        canvas.style.height = `${h}px`;
+        canvas.style.top = "50%";
+        canvas.style.left = "50%";
+        canvas.style.transform = "translate(-50%, -50%)";
+      }
+    }
+
+    // 🔹 Load Unity only when portrait
+    async function startUnity() {
+      if (unityLoaded) return;
+      unityLoaded = true;
+
+      createUnityInstance(canvas, {
+        dataUrl: "Build/Build.data",
+        frameworkUrl: "Build/Build.framework.js",
+        codeUrl: "Build/Build.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: document.getElementById("unity-company").dataset.value,
+        productName: document.getElementById("unity-product").dataset.value,
+        productVersion: document.getElementById("unity-version").dataset.value,
+      }, (progress) => {
+        barFill.style.width = (progress * 100) + "%";
+      }).then((instance) => {
+        
+        if(window.gtag){
+          
+          gtag('event', 'Game_opened', {game_id: GameName});
+          gtag('event', 'game_session_end', {game_id: GameName});
+          console.log(`[GA4] Gtag Send game_id: ${GameName}`);
+        } else{
+          console.log(`[GA4] Gtag Windo.gtag Not Found`);
+        }
+
+        unityInstance=instance
+        
+        // Register Unity instance with Uber Arcade bridge
+        if (window.SetUnityInstance) {
+          window.SetUnityInstance(instance);
+        }
+        
+        // Notify Uber Arcade that game has started
+        if (window.OnGameStart) {
+          window.OnGameStart('brick_breaker');
+        }
+        
+        loader.style.opacity = 0;
+        setTimeout(() => loader.style.display = "none", 400);
+      }).catch(console.error);
+    }
+
+    // 🔹 Update overlay + control Unity visibility
+    function updateRotateOverlay() {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (isLandscape) {
+        rotateOverlay.style.display = "flex";
+        canvas.style.display = "none";
+        if (unityInstance) {
+          unityInstance.SendMessage('WebGLBridge', 'PauseGame');
+        console.warn(`Unity instance  ready:`);
+        
+
+        }else {
+        console.warn(`Unity instance not ready: `);
+    }
+      } else {
+        rotateOverlay.style.display = "none";
+        canvas.style.display = "block";
+        if (unityInstance) {
+          unityInstance.SendMessage('WebGLBridge', 'ResumeGame');
+        console.warn(`Unity instance  ready: resume Game`);
+
+        }else {
+          
+        }
+        startUnity(); // Start Unity only when portrait confirmed
+      }
+    }
+
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      updateRotateOverlay();
+    });
+    window.addEventListener("orientationchange", updateRotateOverlay);
+
+    // 🔹 Require a user gesture for fullscreen
+    function initOnUserTap() {
+      // const elem = document.documentElement;
+      // if (elem.requestFullscreen) elem.requestFullscreen();
+      document.removeEventListener("click", initOnUserTap);
+    }
+    document.addEventListener("click", initOnUserTap);
+
+    // 🔹 Initial setup
+    resizeCanvas();
+    updateRotateOverlay();
+  </script>
+</body>
+</html>

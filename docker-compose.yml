@@ -1,0 +1,27 @@
+version: '3.8'
+
+# Frontend-only Docker Compose
+# This assumes the backend is running separately or via docker-compose.local.yml
+# For unified setup, see docker-compose.local.yml in parent directory
+
+services:
+  # Frontend nginx service
+  frontend:
+    build: .
+    container_name: uber-arcade-frontend
+    ports:
+      - "8080:80"
+    environment:
+      # Backend API URL - adjust if backend is on different host/port
+      - API_URL=http://api:3000
+    networks:
+      - uber-arcade-network
+    restart: unless-stopped
+
+networks:
+  uber-arcade-network:
+    driver: bridge
+    # If backend is running separately, make this external:
+    # external: true
+    # name: uber-arcade-network
+

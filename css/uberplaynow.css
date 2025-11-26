@@ -1,0 +1,1564 @@
+@font-face {
+  font-family: Arcadeclassic;
+  src: url('../fonts/ARCADECLASSIC.TTF') format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Ubermove;
+  src: url('../fonts/UberMove-Bold.woff') format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Ubermovetext;
+  src: url('../fonts/UberMoveText-Bold.woff') format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Ubermovetext;
+  src: url('../fonts/UberMoveText-Medium.woff') format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Ubermovetext;
+  src: url('../fonts/UberMoveText-Regular.woff') format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Ubermove;
+  src: url('../fonts/UberMove-Medium.woff') format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Ubermove;
+  src: url('../fonts/UberMove-Regular.woff') format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Ubermovetext;
+  src: url('../fonts/UberMoveText-Light.woff') format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Ubermove;
+  src: url('../fonts/UberMove-Light.woff') format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Font;
+  src: url('../fonts/font.woff') format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --_colors---uber-light-blue: #9fc3fe;
+  --_colors---snake-purple: #ddbbfa;
+  --_colors---asteroids-yellow: #d9c0b0;
+  --_colors---brick-breaker-blue: #bbcdfa;
+  --_colors---grey: #929292;
+  --_colors---small-prize: #ffae40;
+  --_colors---med-prize: #00b8c9;
+  --_colors---big-prize: #f82e3e;
+}
+
+.w-layout-hflex {
+  flex-direction: row;
+  align-items: flex-start;
+  display: flex;
+}
+
+body {
+  color: #333;
+  font-family: Ubermove, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+h1 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 2.375rem;
+  font-weight: 700;
+  line-height: 44px;
+}
+
+strong {
+  font-weight: bold;
+}
+
+.arcade-body {
+  color: #0c0c0c;
+  background-color: #000;
+  font-family: Ubermove, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.3rem;
+}
+
+.content-wrapper {
+  display: none;
+  position: relative;
+}
+
+.uber-bb-logo.absolute {
+  vertical-align: baseline;
+  width: 50%;
+  position: absolute;
+  inset: auto;
+}
+
+.relative {
+  object-fit: cover;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 60svh;
+  display: flex;
+  position: relative;
+}
+
+.relative.desktop {
+  height: 100vh;
+}
+
+.ad {
+  width: 100%;
+  height: 100svh;
+}
+
+.section-container {
+  background-image: linear-gradient(#000, #212121);
+  height: 100svh;
+}
+
+.section-container.about-us {
+  display: none;
+}
+
+.game-border-content {
+  flex-flow: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  max-height: 160px;
+  padding-top: 6rem;
+  padding-bottom: 1rem;
+  padding-left: 1rem;
+  display: flex;
+}
+
+.button-text {
+  font-family: Font, Arial, sans-serif;
+}
+
+.desktop-logo {
+  width: 100%;
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.absolute.size-medium {
+  width: 40%;
+}
+
+.notice-t {
+  color: #fff;
+  text-align: center;
+  margin-top: 34px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.p-white {
+  font-family: Ubermove, Arial, sans-serif;
+}
+
+.game-container.snake, .game-container.brickbreaker, .game-container.meteors {
+  display: none;
+}
+
+.pixel-text {
+  font-family: Font, Arial, sans-serif;
+}
+
+.fullpage {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  display: flex;
+}
+
+.paragraph-3 {
+  text-align: center;
+  font-size: 1rem;
+}
+
+.c-align {
+  color: #000;
+  text-align: center;
+  font-size: 1rem;
+}
+
+@media screen and (max-width: 991px) {
+  body {
+    color: #0b0b0b;
+    background-color: #000;
+    font-family: Montserrat, sans-serif;
+    font-size: 1rem;
+    line-height: 1.3rem;
+  }
+
+  .arcade-body.about-us, .arcade-body.games {
+    background-color: #000;
+  }
+
+  .content-wrapper {
+    display: block;
+  }
+
+  .uber-bb-logo {
+    width: 40%;
+    max-width: 400px;
+  }
+
+  .uber-bb-logo.alt-page {
+    width: 60%;
+    max-width: 600px;
+  }
+
+  .relative {
+    height: 40svh;
+  }
+
+  .relative.desktop {
+    display: none;
+  }
+
+  .ad-container {
+    grid-column-gap: .2rem;
+    grid-row-gap: .2rem;
+    background-color: #fff;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 60svh;
+    padding: 1rem 4rem 4rem;
+    display: flex;
+  }
+
+  .button {
+    color: #fff;
+    background-color: #000;
+    border-radius: 50px;
+    padding: .8rem 1.2rem;
+    font-weight: 700;
+  }
+
+  .section-container {
+    background-image: none;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    display: flex;
+    position: relative;
+  }
+
+  .section-container.about {
+    height: auto;
+    margin-top: 0;
+  }
+
+  .section-container.about-us {
+    min-width: auto;
+    height: auto;
+    min-height: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+    display: block;
+  }
+
+  .game-list-container {
+    grid-column-gap: 1.5rem;
+    grid-row-gap: 1.5rem;
+    background-image: url('../images/gradient-overlay.svg'), linear-gradient(#0003, #0003), url('../images/gradient-bg.webp');
+    background-position: 0 0, 0 0, 50% 0;
+    background-repeat: repeat, repeat, repeat-x;
+    background-size: cover, auto, auto 100%;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding: 0 2rem 2rem;
+    display: flex;
+  }
+
+  .game-list-item {
+    -webkit-text-fill-color: inherit;
+    background-image: linear-gradient(270deg, #858282, #efefef 25%, #737373 51%, #ededed 81%, #828282);
+    background-clip: border-box;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 600px;
+    padding: 4px;
+    position: relative;
+  }
+
+  .game-border-content.snake {
+    cursor: pointer;
+    background-image: linear-gradient(45deg, #000, #fff0 47%), url('../images/snake-80.webp');
+    background-position: 0 0, 50% 80%;
+    background-size: auto, cover;
+    border-radius: 5px;
+    position: relative;
+  }
+
+  .game-border-content.asteroids {
+    cursor: pointer;
+    background-color: #000;
+    background-image: url('../images/asteroids-tile2x.webp');
+    background-position: 50% 51%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 5px;
+    justify-content: flex-end;
+    align-items: flex-end;
+    min-height: 150px;
+    max-height: 150px;
+    padding-top: 3.5rem;
+    padding-bottom: 1rem;
+    padding-right: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-border-content.brick-breaker {
+    cursor: pointer;
+    background-image: url('../images/brick-breaker-extended-80.webp');
+    background-position: 72% 34%;
+    background-size: auto;
+    border-radius: 5px;
+    position: relative;
+  }
+
+  .image {
+    z-index: 1;
+    width: 70%;
+    position: relative;
+    bottom: 30%;
+  }
+
+  .image.snake-logo {
+    width: 40%;
+    bottom: 0%;
+  }
+
+  .image.brickbreaker {
+    width: 40%;
+  }
+
+  .image.brickbreaker-logo {
+    width: 60%;
+    margin-left: -15px;
+    bottom: 0;
+  }
+
+  .image.asteroids-logo {
+    aspect-ratio: auto;
+    object-position: 50% 50%;
+    bottom: 40%;
+  }
+
+  .image.meteors {
+    width: 50%;
+    bottom: auto;
+  }
+
+  .pixel-button {
+    justify-content: center;
+    align-items: center;
+    padding: .6rem 2rem;
+    text-decoration: none;
+    display: flex;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+  }
+
+  .pixel-button.big-button {
+    background-color: var(--_colors---uber-light-blue);
+    padding-top: .9rem;
+    padding-bottom: .9rem;
+  }
+
+  .pixel-button.modal-mod {
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    background-color: #000;
+    flex-flow: column;
+    width: auto;
+    max-width: 400px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .border {
+    background-color: var(--_colors---snake-purple);
+    width: 100%;
+    height: 4px;
+    position: absolute;
+    inset: 0% 0% auto;
+  }
+
+  .border.bottom {
+    inset: auto 0% 0%;
+  }
+
+  .border.side {
+    width: 4px;
+    height: calc(100% - 8px);
+    inset: 4px auto 0% -4px;
+  }
+
+  .border.side.right {
+    inset: 4px -4px 0% auto;
+  }
+
+  .border.main {
+    background-color: var(--_colors---uber-light-blue);
+  }
+
+  .border.asteroids {
+    background-color: var(--_colors---asteroids-yellow);
+  }
+
+  .border.brickbreaker {
+    background-color: var(--_colors---brick-breaker-blue);
+  }
+
+  .button-text {
+    color: var(--_colors---uber-light-blue);
+    font-family: Font, Arial, sans-serif;
+    position: relative;
+  }
+
+  .button-text.snake {
+    color: var(--_colors---snake-purple);
+    text-decoration: none;
+  }
+
+  .button-text.asteroids {
+    color: var(--_colors---asteroids-yellow);
+  }
+
+  .button-text.brickbreaker {
+    color: var(--_colors---brick-breaker-blue);
+  }
+
+  .button-text.black {
+    color: #000;
+    font-size: 1.2rem;
+  }
+
+  .link {
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 700;
+    text-decoration: underline;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+  }
+
+  .pixel-heading {
+    color: #fff;
+    font-family: Arcadeclassic, Arial, sans-serif;
+    font-size: 2rem;
+  }
+
+  .p-white {
+    color: #fff;
+  }
+
+  .p-white.c-align {
+    text-align: center;
+    width: 70%;
+  }
+
+  .p-white.c-align.winner {
+    text-wrap: balance;
+    width: 90%;
+    font-family: Ubermove, Arial, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.8rem;
+  }
+
+  .p-white.wrap {
+    margin-top: 0;
+  }
+
+  .p-white.wrap.big {
+    text-align: center;
+    text-wrap: balance;
+    font-size: 1.5rem;
+    line-height: 1.9rem;
+  }
+
+  .game-container {
+    z-index: 1;
+    background-color: #000;
+    width: 100%;
+    height: 100svh;
+    display: none;
+    position: fixed;
+    top: 0;
+  }
+
+  .game-container.fixed {
+    position: fixed;
+  }
+
+  .game-container.show, .game-container.snake, .game-container.brickbreaker, .game-container.meteors {
+    display: block;
+  }
+
+  .game-graohic {
+    object-fit: cover;
+    object-position: 50% 100%;
+    width: 100%;
+    height: 50svh;
+    position: relative;
+  }
+
+  .game-graohic.snake {
+    background-image: linear-gradient(#000, #08080800 31%), linear-gradient(225deg, #fff0 53%, #000), url('../images/snake-80.webp');
+    background-position: 0 0, 0 0, 50% 100%;
+    background-size: auto, auto, cover;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 50dvh;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    padding-left: 4rem;
+    display: flex;
+  }
+
+  .game-graohic.asteroids {
+    background-image: linear-gradient(#000, #2220 23%), url('../images/asteroids-80.webp');
+    background-position: 0 0, 50% 58%;
+    background-size: auto, 101%;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 4rem;
+    display: flex;
+  }
+
+  .game-graohic.brickbreaker {
+    background-image: linear-gradient(#000, #0f0f0f00 39%), url('../images/brick-breaker-extended-80.webp');
+    background-position: 0 0, 100%;
+    background-repeat: repeat, no-repeat;
+    background-size: auto, 140%;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2rem 4rem;
+    display: flex;
+  }
+
+  .game-details-play {
+    height: 50svh;
+    padding: 2rem;
+  }
+
+  .game-details-play.ad-container.mod {
+    background-color: #000;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 50svh;
+    min-height: auto;
+    padding-top: 2rem;
+    padding-right: 4rem;
+  }
+
+  .graphic-image {
+    object-fit: cover;
+    object-position: 50% 100%;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pixel-text {
+    color: #fff;
+    letter-spacing: .8px;
+    max-width: 37ch;
+    font-family: Font, Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.4rem;
+  }
+
+  .pixel-text.snake {
+    color: var(--_colors---snake-purple);
+  }
+
+  .pixel-text.asteroids {
+    color: var(--_colors---asteroids-yellow);
+    max-width: 60ch;
+  }
+
+  .pixel-text.brickbreaker {
+    color: var(--_colors---brick-breaker-blue);
+    max-width: 48ch;
+  }
+
+  .container {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    display: flex;
+  }
+
+  .container.gap-m {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+  }
+
+  .game-content {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    display: flex;
+  }
+
+  .logo-small {
+    width: 200px;
+  }
+
+  .about {
+    grid-column-gap: 0rem;
+    grid-row-gap: 0rem;
+    flex-flow: column;
+    width: 100%;
+    margin-bottom: 2rem;
+    display: flex;
+  }
+
+  .body {
+    color: #0c0c0c;
+  }
+
+  .link-block {
+    text-decoration: none;
+  }
+
+  .image-2 {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin-top: 1rem;
+    margin-right: 1rem;
+    position: fixed;
+    inset: 0% 0% auto auto;
+  }
+
+  .game-heading {
+    filter: drop-shadow(3px 6px #000);
+    color: #fff;
+    white-space: nowrap;
+    text-wrap: pretty;
+    font-family: Font, Arial, sans-serif;
+    font-size: 1.5rem;
+  }
+
+  .small-container {
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    display: flex;
+  }
+
+  .prize-one {
+    color: var(--_colors---small-prize);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .prize-two {
+    color: var(--_colors---med-prize);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .prize-two.exausted {
+    color: var(--_colors---grey);
+    -webkit-text-decoration-skip-ink: auto;
+    text-decoration-skip-ink: auto;
+    text-decoration: line-through;
+  }
+
+  .prize-three {
+    color: var(--_colors---big-prize);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .div-block {
+    margin-bottom: 1rem;
+  }
+
+  .side-page-container {
+    background-color: #000;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100svh;
+    padding: 2rem;
+    display: flex;
+  }
+
+  .side-page-container.gradient-bg {
+    background-image: url('../images/gradient-overlay.svg'), url('../images/gradient-bg.webp');
+    background-position: 0 0, 0 0;
+    background-repeat: no-repeat, repeat;
+    background-size: cover, auto;
+    width: 100%;
+  }
+
+  .side-page-container.gradient-bg.content {
+    background-image: linear-gradient(#0000004d, #0000004d), url('../images/gradient-overlay.svg'), url('../images/gradient-bg.webp');
+    background-position: 0 0, 0 0, 0 0;
+    background-repeat: repeat, no-repeat, repeat;
+    background-size: auto, cover, auto;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .about-snake-logo {
+    max-width: 170px;
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-meteors-logo {
+    max-width: 220px;
+    margin-bottom: 1rem;
+  }
+
+  .side-page-content {
+    grid-column-gap: 4rem;
+    grid-row-gap: 4rem;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 4rem;
+    display: flex;
+  }
+
+  .image-3 {
+    max-width: 450px;
+  }
+
+  .div-block-2 {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+  }
+
+  .niceworkimage {
+    max-width: 361px;
+  }
+
+  .confirm-modal {
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    background-color: #000000c7;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100svh;
+    display: none;
+    position: fixed;
+    inset: 0%;
+  }
+
+  .p-blue {
+    color: var(--_colors---uber-light-blue);
+  }
+
+  .div-block-3 {
+    cursor: pointer;
+  }
+
+  .div-block-4 {
+    grid-column-gap: .5rem;
+    grid-row-gap: .5rem;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+  }
+
+  .close {
+    cursor: pointer;
+    width: 20px;
+    margin-top: .5rem;
+    margin-right: .5rem;
+    position: absolute;
+    inset: 0% 0% auto auto;
+  }
+
+  .text-span, .text-span-2, .text-span-3 {
+    font-size: .8rem;
+  }
+
+  .game-group {
+    grid-column-gap: 16px;
+    grid-row-gap: 16px;
+    flex-flow: column;
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-columns: 1fr;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+  }
+
+  .list-item {
+    margin-bottom: 1rem;
+    padding-left: .5rem;
+  }
+
+  .list {
+    color: #fff;
+    padding-left: 1rem;
+  }
+
+  .list.tophalf {
+    margin-bottom: 0;
+  }
+
+  .game-name-tc {
+    font-size: 1.4rem;
+  }
+
+  .table {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .text-span-4 {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .about-brickbreaker-logo {
+    width: 219px;
+    margin-left: -7px;
+  }
+
+  .body_303 {
+    background-color: #fff;
+  }
+
+  .fullpage {
+    width: 100%;
+  }
+
+  .flex-block {
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  body {
+    background-color: #000;
+  }
+
+  .uber-bb-logo {
+    width: 50%;
+  }
+
+  .uber-bb-logo.absolute {
+    min-width: 380px;
+  }
+
+  .uber-bb-logo.alt-page {
+    width: 80%;
+  }
+
+  .ad-container {
+    padding-left: 2rem;
+  }
+
+  .ad {
+    position: relative;
+  }
+
+  .section-container {
+    height: 100svh;
+    position: relative;
+  }
+
+  .game-border-content.snake, .game-border-content.asteroids, .game-border-content.brick-breaker {
+    max-height: 100px;
+  }
+
+  .pixel-button {
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+  }
+
+  .pixel-button.modal-mod {
+    justify-content: center;
+    align-items: center;
+    width: auto;
+  }
+
+  .border {
+    background-color: var(--_colors---uber-light-blue);
+    width: 100%;
+    height: 4px;
+    position: absolute;
+    inset: 0% 0% auto;
+  }
+
+  .border.bottom {
+    inset: auto 0% 0%;
+  }
+
+  .border.side {
+    width: 4px;
+    height: calc(100% - 8px);
+    inset: auto auto auto -4px;
+  }
+
+  .border.side.right {
+    background-color: var(--_colors---uber-light-blue);
+    height: calc(100% - 8px);
+  }
+
+  .border.side.right.snake {
+    background-color: var(--_colors---snake-purple);
+  }
+
+  .border.side.right.asteroids {
+    background-color: var(--_colors---asteroids-yellow);
+  }
+
+  .border.side.right.brickbreaker {
+    background-color: var(--_colors---brick-breaker-blue);
+  }
+
+  .border.snake {
+    background-color: var(--_colors---snake-purple);
+  }
+
+  .button-text {
+    color: var(--_colors---uber-light-blue);
+  }
+
+  .game-container.brickbreaker {
+    height: 100dvh;
+    overflow: visible;
+  }
+
+  .game-graohic.snake {
+    padding-left: 2rem;
+  }
+
+  .game-graohic.brickbreaker {
+    object-position: 100% 50%;
+    background-position: 99%;
+    background-size: 150%;
+    padding-left: 2rem;
+  }
+
+  .game-details-play.ad-container.mod {
+    padding-left: 2rem;
+  }
+
+  .pixel-text.asteroids {
+    max-width: 70ch;
+  }
+
+  .pixel-text.brickbreaker {
+    font-size: 1rem;
+    line-height: 1.4rem;
+  }
+
+  .image-2 {
+    height: 30px;
+  }
+
+  .confirm-modal {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    background-color: #000000c9;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100svh;
+    display: flex;
+    position: fixed;
+    inset: 0%;
+  }
+
+  .list-item {
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  strong {
+    font-family: Ubermove, Arial, sans-serif;
+    font-size: 1rem;
+  }
+
+  .uber-bb-logo {
+    width: 60%;
+    min-width: 160px;
+  }
+
+  .uber-bb-logo.absolute {
+    width: 70%;
+    min-width: 268px;
+  }
+
+  .uber-bb-logo.alt-page {
+    width: 60%;
+    min-width: 180px;
+  }
+
+  .ad-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .heading {
+    font-size: 2rem;
+    line-height: 2rem;
+  }
+
+  .button, .paragraph-2 {
+    font-size: 1rem;
+  }
+
+  .section-container {
+    padding-bottom: 2rem;
+  }
+
+  .section-container.about-us {
+    background-color: #000;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .game-list-container {
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .game-border-content.snake {
+    min-height: 110px;
+    max-height: none;
+    padding-top: 2rem;
+  }
+
+  .game-border-content.asteroids {
+    background-position: 56% 41%;
+    background-size: 140%;
+    height: 100%;
+    min-height: 110px;
+    max-height: none;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .game-border-content.brick-breaker {
+    background-position: 67% 34%;
+    background-size: 140%;
+    min-height: 110px;
+    max-height: none;
+    padding-top: 1rem;
+  }
+
+  .image.brickbreaker-logo {
+    position: absolute;
+    bottom: 1rem;
+  }
+
+  .image.asteroids-logo {
+    width: auto;
+  }
+
+  .pixel-button {
+    margin-left: 4px;
+  }
+
+  .pixel-button.modal-mod {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    width: 80%;
+    padding: 3rem 1rem;
+  }
+
+  .border.bottom.snake {
+    background-color: var(--_colors---snake-purple);
+  }
+
+  .border.side.right {
+    top: 4px;
+    bottom: 0;
+  }
+
+  .border.side.right.snake, .border.snake {
+    background-color: var(--_colors---snake-purple);
+  }
+
+  .button-text {
+    color: var(--_colors---uber-light-blue);
+    font-family: Font, Arial, sans-serif;
+  }
+
+  .link {
+    text-decoration: underline;
+  }
+
+  .pixel-heading {
+    font-size: 1rem;
+  }
+
+  .p-white.c-align {
+    text-wrap: balance;
+    width: 90%;
+    font-size: 1rem;
+    line-height: 1.2rem;
+  }
+
+  .p-white.c-align.winner {
+    font-size: 1.2rem;
+    line-height: 1.5rem;
+  }
+
+  .p-white.align {
+    text-align: center;
+  }
+
+  .p-white.wrap {
+    text-wrap: balance;
+  }
+
+  .p-white.grey {
+    color: var(--_colors---grey);
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .game-container {
+    background-color: #000;
+    flex-flow: column;
+    height: 100svh;
+    display: flex;
+  }
+
+  .game-container.snake {
+    display: flex;
+  }
+
+  .game-container.brickbreaker {
+    display: block;
+    overflow: auto;
+  }
+
+  .game-container.meteors {
+    height: auto;
+    display: block;
+  }
+
+  .game-graphic-container {
+    background-color: #000;
+  }
+
+  .game-graohic {
+    object-fit: cover;
+    width: 100%;
+    height: 50svh;
+    position: relative;
+  }
+
+  .game-graohic.snake {
+    height: 40dvh;
+    padding-right: 2rem;
+  }
+
+  .game-graohic.asteroids {
+    object-position: 50% 100%;
+    background-position: 0 0, 50%;
+    background-repeat: repeat, no-repeat;
+    background-size: auto, cover;
+    height: 40svh;
+  }
+
+  .game-graohic.brickbreaker {
+    background-image: linear-gradient(#000, #08080800 40%), url('../images/brick-breaker-extended-80.webp');
+    background-position: 0 0, 80% 0;
+    background-repeat: repeat, no-repeat;
+    background-size: auto, 180%;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 40svh;
+    padding-right: 2rem;
+    display: flex;
+  }
+
+  .game-details-play {
+    width: 100%;
+    height: 50svh;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .game-details-play.ad-container.mod {
+    background-color: #000;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: auto;
+    min-height: 60dvh;
+    padding: 1rem;
+  }
+
+  .pixel-text.snake {
+    max-width: 40ch;
+    font-size: 1rem;
+    line-height: 1.2rem;
+  }
+
+  .pixel-text.asteroids {
+    font-size: 1rem;
+    line-height: 1.2rem;
+  }
+
+  .pixel-text.brickbreaker {
+    text-wrap: balance;
+    font-size: 1rem;
+    line-height: 1.2rem;
+  }
+
+  .container {
+    padding-bottom: 1rem;
+  }
+
+  .game-content {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    display: flex;
+  }
+
+  .logo-small {
+    width: 100px;
+  }
+
+  .logo-small.absolute {
+    object-position: 50% 50%;
+    inset: 0% auto auto;
+  }
+
+  .about {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .body.game-pages {
+    background-color: #000;
+  }
+
+  .text-block {
+    color: #fff;
+    text-align: center;
+  }
+
+  .game-heading {
+    filter: drop-shadow(2px 4px #000000b3);
+    font-size: 1.2rem;
+  }
+
+  .small-container {
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: 0;
+    display: flex;
+    position: relative;
+  }
+
+  .prize-one, .prize-two {
+    text-wrap: pretty;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+  }
+
+  .prize-three {
+    text-wrap: pretty;
+    font-size: 1.2rem;
+  }
+
+  .div-block {
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .side-page-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .side-page-container.gradient-bg {
+    background-image: url('../images/gradient-overlay.svg'), url('../images/gradient-bg.webp');
+    background-position: 0 0, 0 0;
+    background-size: cover, auto;
+  }
+
+  .side-page-container.gradient-bg.content {
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100svh;
+  }
+
+  .side-page-container.tcs {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .about-snake-logo {
+    max-width: 120px;
+    margin-top: 1rem;
+  }
+
+  .about-meteors-logo {
+    max-width: 160px;
+  }
+
+  .side-page-content {
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .image-3 {
+    width: 100%;
+  }
+
+  .div-block-2 {
+    width: 100%;
+    padding-bottom: 2rem;
+  }
+
+  .niceworkimage {
+    width: 100%;
+    max-width: 264px;
+  }
+
+  .confirm-modal {
+    display: none;
+  }
+
+  .p-blue {
+    text-align: center;
+  }
+
+  .div-block-5 {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+
+  .text-span-2 {
+    text-decoration: none;
+  }
+
+  .text-span-2.hide {
+    display: none;
+  }
+
+  .game-group {
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+  }
+
+  .list-item {
+    color: #fff;
+    margin-bottom: 1rem;
+    padding-left: 4px;
+  }
+
+  .list {
+    color: #fff;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .list.tophalf {
+    margin-bottom: 0;
+  }
+
+  .game-name-tc {
+    font-size: 1.4rem;
+  }
+
+  .table {
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .about-brickbreaker-logo {
+    margin-bottom: 1rem;
+  }
+
+  .flex-block {
+    grid-column-gap: 0rem;
+    grid-row-gap: 0rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+
+@font-face {
+  font-family: 'Arcadeclassic';
+  src: url('../fonts/ARCADECLASSIC.TTF') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubermove';
+  src: url('../fonts/UberMove-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubermovetext';
+  src: url('../fonts/UberMoveText-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubermovetext';
+  src: url('../fonts/UberMoveText-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubermovetext';
+  src: url('../fonts/UberMoveText-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubermove';
+  src: url('../fonts/UberMove-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubermove';
+  src: url('../fonts/UberMove-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubermovetext';
+  src: url('../fonts/UberMoveText-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ubermove';
+  src: url('../fonts/UberMove-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Font';
+  src: url('../fonts/font.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

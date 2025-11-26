@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 372.23 136.63">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: UberMove-Regular, 'Uber Move';
+      }
+
+      .cls-1, .cls-2 {
+        fill: #fff;
+        font-size: 17px;
+      }
+
+      .cls-3 {
+        fill: none;
+        stroke: #fff;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-4 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-5 {
+        letter-spacing: 0em;
+      }
+
+      .cls-6 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-2 {
+        font-family: UberMove-Bold, 'Uber Move';
+        font-weight: 700;
+      }
+
+      .cls-7 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-8 {
+        letter-spacing: 0em;
+      }
+
+      .cls-9 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-10 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-11 {
+        letter-spacing: 0em;
+      }
+
+      .cls-12 {
+        letter-spacing: -.02em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <rect class="cls-3" x=".5" y=".5" width="371.23" height="33.91"/>
+      <text class="cls-2" transform="translate(8.21 23.61)"><tspan x="0" y="0">Pri</tspan><tspan class="cls-10" x="19.82" y="0">z</tspan><tspan class="cls-5" x="27.54" y="0">e S</tspan><tspan class="cls-4" x="50.83" y="0">c</tspan><tspan class="cls-5" x="59.72" y="0">o</tspan><tspan class="cls-10" x="70.29" y="0">r</tspan><tspan x="75.94" y="0">e Tier</tspan></text>
+      <text class="cls-2" transform="translate(175.75 23.61)"><tspan x="0" y="0">P</tspan><tspan class="cls-4" x="10.08" y="0">r</tspan><tspan x="15.72" y="0">omo </tspan><tspan class="cls-8" x="55.45" y="0">C</tspan><tspan x="67.49" y="0">ode</tspan></text>
+      <line class="cls-3" x1="166.96" y1=".5" x2="166.96" y2="34.41"/>
+      <rect class="cls-3" x=".5" y="34.41" width="371.23" height="33.91"/>
+      <text class="cls-1" transform="translate(8.21 57.52)"><tspan x="0" y="0">1</tspan></text>
+      <text class="cls-1" transform="translate(175.75 57.52)"><tspan class="cls-6" x="0" y="0">1</tspan><tspan x="6.99" y="0">0% </tspan><tspan class="cls-7" x="34.78" y="0">o</tspan><tspan class="cls-11" x="44.57" y="0">f</tspan><tspan x="49.74" y="0">f (max $5 0</tspan><tspan class="cls-11" x="130.86" y="0">f</tspan><tspan x="136.03" y="0">f)</tspan></text>
+      <line class="cls-3" x1="166.96" y1="34.41" x2="166.96" y2="68.32"/>
+      <rect class="cls-3" x=".5" y="68.32" width="371.23" height="33.91"/>
+      <text class="cls-1" transform="translate(8.21 91.43)"><tspan x="0" y="0">2</tspan></text>
+      <text class="cls-1" transform="translate(175.75 91.43)"><tspan x="0" y="0">20% </tspan><tspan class="cls-9" x="36.46" y="0">o</tspan><tspan class="cls-11" x="46.26" y="0">f</tspan><tspan class="cls-5" x="51.42" y="0">f (max $</tspan><tspan class="cls-6" x="109.19" y="0">1</tspan><tspan x="116.18" y="0">0 0</tspan><tspan class="cls-11" x="140.83" y="0">f</tspan><tspan x="145.99" y="0">f)</tspan></text>
+      <line class="cls-3" x1="166.96" y1="68.32" x2="166.96" y2="102.22"/>
+      <rect class="cls-3" x=".5" y="102.22" width="371.23" height="33.91"/>
+      <text class="cls-1" transform="translate(8.21 125.34)"><tspan x="0" y="0">3</tspan></text>
+      <text class="cls-1" transform="translate(175.75 125.34)"><tspan x="0" y="0">30% </tspan><tspan class="cls-9" x="36.8" y="0">o</tspan><tspan class="cls-11" x="46.6" y="0">f</tspan><tspan x="51.76" y="0">f (max $</tspan><tspan class="cls-12" x="109.53" y="0">1</tspan><tspan x="116.69" y="0">5 0</tspan><tspan class="cls-11" x="140.04" y="0">f</tspan><tspan x="145.21" y="0">f)</tspan></text>
+      <line class="cls-3" x1="166.96" y1="102.22" x2="166.96" y2="136.13"/>
+    </g>
+  </g>
+</svg>

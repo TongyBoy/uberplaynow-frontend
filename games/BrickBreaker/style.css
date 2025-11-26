@@ -1,0 +1,167 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0a0a0a, #000000 80%);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* 🔹 Loading Overlay */
+#loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #101010 0%, #1b1b1b 100%);
+  z-index: 10;
+  transition: opacity 0.4s ease;
+}
+
+/* 🔹 Logo */
+#logo-container {
+  margin-bottom: 40px;
+}
+
+#logo {
+  width: 240px; /* Larger logo */
+  max-width: 80vw;
+  opacity: 0.95;
+  /* filter: drop-shadow(0 0 10px #00b4ff); */
+}
+
+/* 🔹 Loading Bar */
+#bar {
+  width: 60%;
+  max-width: 280px;
+  height: 10px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+#bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #00b4ff, #0078ff);
+  transition: width 0.25s ease;
+}
+
+/* 🔹 Canvas */
+#unity-canvas {
+  display: block;
+  background: #000;
+}
+
+/* --- Desktop (Fixed Portrait Window) --- */
+@media (min-width: 801px) {
+  #unity-canvas {
+    position: absolute;
+    width: 540px;   /* portrait aspect */
+    height: 960px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+  }
+}
+
+
+
+
+/* --- Mobile (Fullscreen Portrait) --- */
+@media (max-width: 800px) {
+  #unity-canvas {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+  }
+
+  #logo {
+    width: 200px; /* slightly smaller on phones */
+  }
+
+  #bar {
+    width: 75%;
+  }
+}
+
+
+/* 🔹 Rotate Overlay */
+/* 🔹 Rotate Overlay */
+#rotate-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: rgba(0,0,0,0.95); /* slight transparency */
+  color: #fff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  z-index: 9999;
+  text-align: center;
+  padding: 20px; /* padding so content never clips */
+  box-sizing: border-box;
+}
+
+#rotate-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 100%; /* prevent overflow */
+}
+
+#rotate-icon {
+  width: 50vw; /* responsive width */
+  max-width: 180px; /* don’t get too big on tablets */
+  height: auto;
+  opacity: 0.9;
+}
+
+#rotate-overlay p {
+  font-size: 1em;
+  line-height: 1.4;
+  margin: 0;
+}
+
+#rotate-btn {
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background: #0078ff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+  max-width: 90%; /* don’t overflow on small phones */
+  white-space: normal; /* allow line wrap */
+}
+
+#rotate-btn:hover {
+  background: #0094ff;
+}
+
+/* Optional: adjust for very small screens */
+@media (max-height: 500px) {
+  #rotate-icon {
+    width: 40vw;
+    max-width: 140px;
+  }
+
+  #rotate-btn {
+    font-size: 0.9em;
+    padding: 8px 16px;
+  }
+
+  #rotate-overlay p {
+    font-size: 0.9em;
+  }
+}
