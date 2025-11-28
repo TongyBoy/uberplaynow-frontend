@@ -45,11 +45,18 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
     try {
       const result = JSON.parse(resultData);
       console.log('[Result Handler] Parsed result:', result);
-      displayGameResult(result);
+      
+      // Check if vouchers are exhausted (player qualified but no voucher available)
+      const vouchersExhausted = result.qualifies && result.tier && !result.hasVoucher;
+      
+      displayGameResult(result, vouchersExhausted);
       
       // Check if voucher was generated
       if (result.hasVoucher && result.voucher) {
         setupVoucherClaim(result.voucher);
+      } else if (vouchersExhausted) {
+        // Vouchers exhausted for this tier
+        updateForExhaustedVoucher(result);
       } else {
         // No voucher - show try again message
         updateForNoVoucher(result);
@@ -136,7 +143,7 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
   /**
    * Display the game result with score and tier
    */
-  function displayGameResult(result) {
+  function displayGameResult(result, vouchersExhausted = false) {
     console.log('[Result Handler] 🎮 Displaying result:', result);
     console.log('[Result Handler] 📊 Score:', result.score);
     console.log('[Result Handler] 🎯 Tier:', result.tier);
@@ -145,38 +152,62 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
       console.log('[Result Handler] 🎫 VOUCHER CODE:', result.voucher.code);
       console.log('[Result Handler] 💰 Discount:', result.voucher.discount + '%');
       console.log('[Result Handler] 📅 Expires:', result.voucher.expiresAt);
+    } else if (vouchersExhausted) {
+      console.log('[Result Handler] ⚠️ Vouchers exhausted for this tier');
     } else {
       console.log('[Result Handler] ❌ No voucher - Score not high enough');
     }
 
     // Update score and discount text
     const winnerText = document.querySelector('.p-white.c-align.winner');
-    console.log('[Result Handler] Found winner text element:', !!winnerText);
+    const exhaustedText = document.querySelector('.p-white.c-align.exhausted-message');
+    const claimMessage = document.querySelector('.p-white.c-align:not(.winner):not(.exhausted-message)');
     
-    if (winnerText) {
-      let message = '';
-      
-      if (result.hasVoucher && result.voucher && result.voucher.discount) {
-        // Player won a voucher - use actual voucher discount
-        const discount = result.voucher.discount;
-        const maxDiscount = getMaxDiscountForTier(result.tier);
-        message = `You scored ${result.score} points and earned a promo code for ${discount}% off your next Uber ride (up to $${maxDiscount} off)!`;
-        console.log('[Result Handler] ✅ Updating with voucher message:', message);
-      } else if (result.hasVoucher && result.discount) {
-        // Fallback to result discount if voucher object doesn't have it
-        const maxDiscount = getMaxDiscountForTier(result.tier);
-        message = `You scored ${result.score} points and earned a promo code for ${result.discount}% off your next Uber ride (up to $${maxDiscount} off)!`;
-        console.log('[Result Handler] ✅ Updating with fallback message:', message);
-      } else {
-        // Player didn't qualify
-        message = `You scored ${result.score} points. Keep trying to unlock a promo code!`;
-        console.log('[Result Handler] ⚠️ Updating with no-voucher message:', message);
+    console.log('[Result Handler] Found winner text element:', !!winnerText);
+    console.log('[Result Handler] Found exhausted text element:', !!exhaustedText);
+    
+    if (vouchersExhausted) {
+      // Hide winner message, show exhausted message
+      if (winnerText) {
+        winnerText.style.display = 'none';
       }
-      
-      winnerText.innerHTML = message + '<br><span class="text-span-4">Expires 11.59pm 30 December 2025.</span>';
-      console.log('[Result Handler] ✅ Text updated successfully');
+      if (exhaustedText) {
+        exhaustedText.style.display = 'block';
+        exhaustedText.innerHTML = `You scored ${result.score} Points!<br>No promo codes left for this tier, try again for a different tier`;
+        console.log('[Result Handler] ✅ Updated exhausted message');
+      }
+      if (claimMessage) {
+        claimMessage.style.display = 'none';
+      }
     } else {
-      console.error('[Result Handler] ❌ Could not find winner text element!');
+      // Show normal winner message
+      if (winnerText) {
+        winnerText.style.display = 'block';
+        let message = '';
+        
+        if (result.hasVoucher && result.voucher && result.voucher.discount) {
+          // Player won a voucher - use actual voucher discount
+          const discount = result.voucher.discount;
+          const maxDiscount = getMaxDiscountForTier(result.tier);
+          message = `You scored ${result.score} points and earned a promo code for ${discount}% off your next Uber ride (up to $${maxDiscount} off)!`;
+          console.log('[Result Handler] ✅ Updating with voucher message:', message);
+        } else if (result.hasVoucher && result.discount) {
+          // Fallback to result discount if voucher object doesn't have it
+          const maxDiscount = getMaxDiscountForTier(result.tier);
+          message = `You scored ${result.score} points and earned a promo code for ${result.discount}% off your next Uber ride (up to $${maxDiscount} off)!`;
+          console.log('[Result Handler] ✅ Updating with fallback message:', message);
+        } else {
+          // Player didn't qualify
+          message = `You scored ${result.score} points. Keep trying to unlock a promo code!`;
+          console.log('[Result Handler] ⚠️ Updating with no-voucher message:', message);
+        }
+        
+        winnerText.innerHTML = message + '<br><span class="text-span-4">Expires 11.59pm 30 December 2025.</span>';
+        console.log('[Result Handler] ✅ Text updated successfully');
+      }
+      if (exhaustedText) {
+        exhaustedText.style.display = 'none';
+      }
     }
 
     // Update game type if displayed
@@ -299,14 +330,14 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
     }
 
     // Update message text
-    const messageText = document.querySelector('.p-white.c-align:not(.winner)');
+    const messageText = document.querySelector('.p-white.c-align:not(.winner):not(.exhausted-message)');
     if (messageText) {
       messageText.textContent = 'You didn\'t score high enough this time, but you can try again! Keep playing to unlock your reward. The timer is still running!';
       console.log('[Result Handler] ✓ Message updated for try again');
     }
 
     // Make try again button more prominent
-    const tryAgainButton = document.querySelector('a[href="games.html"]');
+    const tryAgainButton = document.querySelector('a[href="games"]');
     if (tryAgainButton) {
       tryAgainButton.style.transform = 'scale(1.1)';
       tryAgainButton.style.transition = 'transform 0.3s ease';
@@ -315,6 +346,38 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
     
     // Note: Timer continues running - NOT ended
     console.log('[Result Handler] ⏱️ Timer continues running - player can try again');
+  }
+
+  /**
+   * Update page for players who qualified but vouchers are exhausted
+   */
+  function updateForExhaustedVoucher(result) {
+    console.log('[Result Handler] ⚠️ Vouchers exhausted for tier - updating UI');
+    
+    // Hide claim button
+    const claimButton = document.querySelector('[data-w-id="64c9b983-bb94-d380-21ed-5f962ab42894"]');
+    if (claimButton) {
+      claimButton.style.display = 'none';
+      console.log('[Result Handler] ✓ Claim button hidden');
+    }
+
+    // Hide the claim message
+    const claimMessage = document.querySelector('.p-white.c-align:not(.winner):not(.exhausted-message)');
+    if (claimMessage) {
+      claimMessage.style.display = 'none';
+      console.log('[Result Handler] ✓ Claim message hidden');
+    }
+
+    // Make try again button more prominent
+    const tryAgainButton = document.querySelector('a[href="games"]');
+    if (tryAgainButton) {
+      tryAgainButton.style.transform = 'scale(1.1)';
+      tryAgainButton.style.transition = 'transform 0.3s ease';
+      console.log('[Result Handler] ✓ Try again button emphasized');
+    }
+    
+    // Note: Timer continues running - player can try again for a different tier
+    console.log('[Result Handler] ⏱️ Timer continues running - player can try again for different tier');
   }
 
   /**

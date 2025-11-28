@@ -236,8 +236,15 @@ class UberArcadeAPI {
       
       // If qualifies for voucher, automatically generate it
       if (data.qualifies && data.tier > 0) {
-        const voucherResult = await this.generateVoucher(data.gamePlayId);
-        data.voucher = voucherResult.voucher;
+        try {
+          const voucherResult = await this.generateVoucher(data.gamePlayId);
+          data.voucher = voucherResult.voucher;
+        } catch (voucherError) {
+          // Voucher generation failed (e.g., vouchers exhausted)
+          // Still store the result with qualifies=true but hasVoucher=false
+          console.warn('⚠️ Voucher generation failed (may be exhausted):', voucherError.message);
+          data.voucher = null;
+        }
       }
 
       // Store complete result for nice-work-player page
