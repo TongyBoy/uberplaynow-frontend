@@ -166,7 +166,7 @@ function ShowVoucherToPlayer(voucherResult) {
   
   // Redirect to nice-work-player page after a brief delay
   setTimeout(() => {
-    window.location.href = '/nice-work-player';
+    window.location.href = '/nice-work-player.html';
   }, 1000);
 }
 
