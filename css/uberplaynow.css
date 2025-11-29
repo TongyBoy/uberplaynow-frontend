@@ -739,6 +739,16 @@ strong {
     text-decoration: line-through;
   }
 
+  /* Exhausted styles for all prize tiers */
+  .prize-one.exhausted,
+  .prize-two.exhausted,
+  .prize-three.exhausted {
+    color: var(--_colors---grey);
+    -webkit-text-decoration-skip-ink: auto;
+    text-decoration-skip-ink: auto;
+    text-decoration: line-through;
+  }
+
   .prize-three {
     color: var(--_colors---big-prize);
     font-size: 1.4rem;

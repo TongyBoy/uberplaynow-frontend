@@ -10,8 +10,64 @@ class SessionTimer {
     this.timerElement = null;
     this.intervalId = null;
     this.onExpireCallback = null;
+    this.isVisible = true;
     
     this.init();
+    this.setupVisibilityHandlers();
+  }
+
+  /**
+   * Setup handlers for page visibility and orientation changes
+   * Fixes issue where timer stops on mobile rotation
+   */
+  setupVisibilityHandlers() {
+    // Handle page visibility changes (tab switching, app backgrounding)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.isVisible = false;
+        console.log('[Timer] Page hidden - timer will continue in background');
+      } else {
+        this.isVisible = true;
+        console.log('[Timer] Page visible - syncing timer');
+        // Immediately update display when returning to page
+        if (this.startTime) {
+          this.updateDisplay();
+        }
+      }
+    });
+
+    // Handle orientation changes (mobile rotation)
+    window.addEventListener('orientationchange', () => {
+      console.log('[Timer] Orientation changed - restarting timer interval');
+      if (this.startTime) {
+        // Restart the interval to ensure it keeps running
+        this.startCountdown();
+      }
+    });
+
+    // Handle window resize (catches some orientation changes that orientationchange misses)
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (this.startTime) {
+          console.log('[Timer] Window resized - syncing timer');
+          this.updateDisplay();
+        }
+      }, 100);
+    });
+
+    // Handle page focus (additional safety net)
+    window.addEventListener('focus', () => {
+      if (this.startTime) {
+        console.log('[Timer] Window focused - syncing timer');
+        this.updateDisplay();
+        // Restart interval if it somehow stopped
+        if (!this.intervalId) {
+          this.startCountdown();
+        }
+      }
+    });
   }
 
   init() {
@@ -74,7 +130,7 @@ class SessionTimer {
       top: 0;
       left: 0;
       right: 0;
-      width: 96%;
+      width: 100%;
       height: 15px;
       z-index: 9999;
       background: #000000;
@@ -114,9 +170,19 @@ class SessionTimer {
     this.updateDisplay();
 
     // Update every second
+    // Note: Using Date.now() for calculations ensures accuracy even if interval delays
     this.intervalId = setInterval(() => {
       this.updateDisplay();
+      
+      // Extra check: If timer should have expired but interval is still running, force expiration
+      const elapsed = Date.now() - this.startTime;
+      if (elapsed >= this.duration && !sessionStorage.getItem('uber_arcade_timer_expired')) {
+        console.warn('[Timer] Detected timer should have expired - forcing expiration');
+        this.handleExpiration();
+      }
     }, 1000);
+    
+    console.log('[Timer] Countdown interval started/restarted');
   }
 
   /**

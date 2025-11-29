@@ -7,7 +7,41 @@ class UberArcadeAPI {
   constructor() {
     this.baseURL = window.location.origin + '/api';
     this.sessionId = null;
+    this.sessionToken = null;
     this.deviceId = this.getOrCreateDeviceId();
+    this.apiKey = this.getApiKey();
+  }
+
+  /**
+   * Get API key from meta tag or environment
+   */
+  getApiKey() {
+    // Check for API key in meta tag (set by backend/config)
+    const metaTag = document.querySelector('meta[name="api-key"]');
+    if (metaTag) {
+      return metaTag.getAttribute('content');
+    }
+    
+    // Injected at build/runtime from environment variable
+    // This placeholder gets replaced by entrypoint.sh
+    return '{{API_KEY_PLACEHOLDER}}';
+  }
+
+  /**
+   * Get common headers for API requests
+   */
+  getHeaders() {
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-API-Key': this.apiKey
+    };
+
+    // Add JWT token if available
+    if (this.sessionToken) {
+      headers['Authorization'] = `Bearer ${this.sessionToken}`;
+    }
+
+    return headers;
   }
 
   /**
@@ -45,6 +79,7 @@ class UberArcadeAPI {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-API-Key': this.apiKey
         },
         body: JSON.stringify({
           deviceId: this.deviceId,
@@ -70,9 +105,11 @@ class UberArcadeAPI {
 
       const data = await response.json();
       this.sessionId = data.sessionId;
+      this.sessionToken = data.token;
       
-      // Store session ID
+      // Store session ID and token
       sessionStorage.setItem('uber_arcade_session_id', this.sessionId);
+      sessionStorage.setItem('uber_arcade_session_token', this.sessionToken);
       
       console.log('✓ Session created:', this.sessionId);
       return data;
@@ -214,9 +251,7 @@ class UberArcadeAPI {
 
       const response = await fetch(`${this.baseURL}/games/score`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify({
           sessionId,
           gameType,
@@ -278,9 +313,7 @@ class UberArcadeAPI {
     try {
       const response = await fetch(`${this.baseURL}/vouchers/generate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify({ gamePlayId })
       });
 
@@ -325,7 +358,9 @@ class UberArcadeAPI {
    */
   async getVoucher(voucherCode) {
     try {
-      const response = await fetch(`${this.baseURL}/vouchers/${voucherCode}`);
+      const response = await fetch(`${this.baseURL}/vouchers/${voucherCode}`, {
+        headers: this.getHeaders()
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to get voucher: ${response.statusText}`);
@@ -347,9 +382,7 @@ class UberArcadeAPI {
 
       await fetch(`${this.baseURL}/analytics/event`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify({
           sessionId,
           eventType,
@@ -372,7 +405,8 @@ class UberArcadeAPI {
       const sessionId = await this.getSession();
 
       const response = await fetch(`${this.baseURL}/sessions/${sessionId}/end`, {
-        method: 'PUT'
+        method: 'PUT',
+        headers: this.getHeaders()
       });
 
       // If session not found (already ended or expired), just clean up locally
@@ -404,7 +438,8 @@ class UberArcadeAPI {
   async getLeaderboard(gameType, limit = 100, offset = 0) {
     try {
       const response = await fetch(
-        `${this.baseURL}/games/leaderboard/${gameType}?limit=${limit}&offset=${offset}`
+        `${this.baseURL}/games/leaderboard/${gameType}?limit=${limit}&offset=${offset}`,
+        { headers: this.getHeaders() }
       );
       
       if (!response.ok) {
@@ -414,6 +449,26 @@ class UberArcadeAPI {
       return await response.json();
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check voucher availability for a game type
+   */
+  async checkVoucherAvailability(gameType) {
+    try {
+      const response = await fetch(`${this.baseURL}/vouchers/availability/${gameType}`, {
+        headers: this.getHeaders()
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to check availability: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error checking voucher availability:', error);
       throw error;
     }
   }

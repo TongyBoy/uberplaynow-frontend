@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin - Uber Arcade Voucher Stats</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .login-box {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 400px;
+      margin: 100px auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .login-box h1 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .login-box button:hover {
+      background: #5568d3;
+    }
+
+    .error {
+      color: #e74c3c;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .dashboard {
+      display: none;
+      animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .header {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      color: #333;
+      margin: 0;
+    }
+
+    .logout-btn {
+      padding: 10px 20px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .stat-card h3 {
+      color: #666;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .stat-card .value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .stat-card.tier1 .value { color: #3498db; }
+    .stat-card.tier2 .value { color: #f39c12; }
+    .stat-card.tier3 .value { color: #e74c3c; }
+    .stat-card.available .value { color: #27ae60; }
+    .stat-card.claimed .value { color: #f39c12; }
+    .stat-card.redeemed .value { color: #95a5a6; }
+
+    .tier-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .tier-section h2 {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .tier-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .tier-stat {
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+
+    .tier-stat.tier1 { border-left-color: #3498db; }
+    .tier-stat.tier2 { border-left-color: #f39c12; }
+    .tier-stat.tier3 { border-left-color: #e74c3c; }
+
+    .tier-stat .label {
+      color: #666;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    .tier-stat .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .tier-stat.exhausted {
+      background: #ffebee;
+      border-left-color: #e74c3c;
+    }
+
+    .tier-stat.exhausted .value {
+      color: #e74c3c;
+    }
+
+    .refresh-btn {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .refresh-btn:hover {
+      background: #5568d3;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: white;
+      font-size: 18px;
+    }
+
+    .timestamp {
+      text-align: center;
+      color: white;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge.available { background: #d4edda; color: #155724; }
+    .badge.claimed { background: #fff3cd; color: #856404; }
+    .badge.redeemed { background: #d1ecf1; color: #0c5460; }
+    .badge.exhausted { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <!-- Login Form -->
+  <div id="login" class="login-box">
+    <h1>🔐 Admin Access</h1>
+    <p style="text-align: center; color: #666; margin-bottom: 20px;">Enter password to view voucher statistics</p>
+    <input type="password" id="password" placeholder="Enter admin password" autofocus>
+    <button onclick="login()">Login</button>
+    <div id="login-error" class="error"></div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard">
+    <div class="container">
+      <div class="header">
+        <h1>🎫 Voucher Statistics Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <button class="refresh-btn" onclick="loadStats()">🔄 Refresh Data</button>
+
+      <!-- Overall Stats -->
+      <div class="stats-grid" id="overall-stats">
+        <div class="stat-card available">
+          <h3>Available</h3>
+          <div class="value" id="stat-available">-</div>
+        </div>
+        <div class="stat-card claimed">
+          <h3>Claimed (Not Redeemed)</h3>
+          <div class="value" id="stat-claimed">-</div>
+        </div>
+        <div class="stat-card redeemed">
+          <h3>Redeemed</h3>
+          <div class="value" id="stat-redeemed">-</div>
+        </div>
+        <div class="stat-card">
+          <h3>Total Vouchers</h3>
+          <div class="value" id="stat-total">-</div>
+        </div>
+      </div>
+
+      <!-- By Tier -->
+      <div class="tier-section">
+        <h2>📊 Vouchers by Tier</h2>
+        <div id="tier-stats"></div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="tier-section">
+        <h2>📝 Recent Activity (Last 50)</h2>
+        <div id="recent-activity"></div>
+      </div>
+
+      <div class="timestamp" id="last-updated"></div>
+    </div>
+  </div>
+
+  <script>
+    let adminPassword = null;
+
+    // Handle Enter key on password input
+    document.getElementById('password').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        login();
+      }
+    });
+
+    function login() {
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      if (!password) {
+        errorDiv.textContent = 'Please enter a password';
+        return;
+      }
+
+      adminPassword = password;
+      
+      // Try to load stats to verify password
+      loadStats()
+        .then(() => {
+          document.getElementById('login').style.display = 'none';
+          document.getElementById('dashboard').style.display = 'block';
+          errorDiv.textContent = '';
+        })
+        .catch(() => {
+          errorDiv.textContent = 'Invalid password';
+          adminPassword = null;
+        });
+    }
+
+    function logout() {
+      adminPassword = null;
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('login').style.display = 'block';
+      document.getElementById('password').value = '';
+    }
+
+    async function loadStats() {
+      try {
+        const response = await fetch('/api/admin/vouchers/stats', {
+          headers: {
+            'Authorization': `Bearer ${adminPassword}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Unauthorized');
+        }
+
+        const data = await response.json();
+        displayStats(data);
+      } catch (error) {
+        console.error('Error loading stats:', error);
+        throw error;
+      }
+    }
+
+    function displayStats(data) {
+      // Overall stats
+      document.getElementById('stat-available').textContent = data.overall.available_vouchers || 0;
+      document.getElementById('stat-claimed').textContent = data.overall.claimed_vouchers || 0;
+      document.getElementById('stat-redeemed').textContent = data.overall.redeemed_vouchers || 0;
+      document.getElementById('stat-total').textContent = data.overall.total_vouchers || 0;
+
+      // Tier stats
+      const tierStatsHtml = data.byTier.map(tier => {
+        const exhausted = tier.available === '0' || tier.available === 0;
+        const tierClass = `tier${tier.tier}`;
+        
+        return `
+          <div class="tier-stats" style="margin-bottom: 30px;">
+            <h3 style="color: #333; margin-bottom: 15px;">Tier ${tier.tier} - ${tier.discount_percent}% Off</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+              <div class="tier-stat ${tierClass} ${exhausted ? 'exhausted' : ''}">
+                <div class="label">Total</div>
+                <div class="value">${tier.total}</div>
+              </div>
+              <div class="tier-stat ${tierClass} ${exhausted ? 'exhausted' : ''}">
+                <div class="label">Available</div>
+                <div class="value">${tier.available}</div>
+                ${exhausted ? '<div style="color: #e74c3c; font-size: 12px; margin-top: 5px; font-weight: 600;">⚠️ EXHAUSTED</div>' : ''}
+              </div>
+              <div class="tier-stat ${tierClass}">
+                <div class="label">Claimed</div>
+                <div class="value">${tier.claimed_not_redeemed}</div>
+              </div>
+              <div class="tier-stat ${tierClass}">
+                <div class="label">Redeemed</div>
+                <div class="value">${tier.redeemed}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('tier-stats').innerHTML = tierStatsHtml;
+
+      // Recent activity
+      if (data.recentActivity && data.recentActivity.length > 0) {
+        const activityHtml = `
+          <table>
+            <thead>
+              <tr>
+                <th>Voucher Code</th>
+                <th>Tier</th>
+                <th>Discount</th>
+                <th>Game</th>
+                <th>Score</th>
+                <th>Issued</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.recentActivity.map(v => `
+                <tr>
+                  <td><code>${v.voucher_code}</code></td>
+                  <td>Tier ${v.tier}</td>
+                  <td>${v.discount_percent}%</td>
+                  <td>${v.game_type || '-'}</td>
+                  <td>${v.score || '-'}</td>
+                  <td>${v.issued_at ? new Date(v.issued_at).toLocaleString() : '-'}</td>
+                  <td>
+                    ${v.is_redeemed 
+                      ? `<span class="badge redeemed">Redeemed ${v.redeemed_at ? new Date(v.redeemed_at).toLocaleString() : ''}</span>` 
+                      : '<span class="badge claimed">Claimed</span>'}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        document.getElementById('recent-activity').innerHTML = activityHtml;
+      } else {
+        document.getElementById('recent-activity').innerHTML = '<p style="color: #666; text-align: center;">No recent activity</p>';
+      }
+
+      // Update timestamp
+      document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+    }
+
+    // Auto-refresh every 30 seconds when logged in
+    setInterval(() => {
+      if (adminPassword && document.getElementById('dashboard').style.display !== 'none') {
+        loadStats();
+      }
+    }, 30000);
+  </script>
+</body>
+</html>
+

@@ -4,6 +4,10 @@ FROM nginx:alpine
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Copy all static files to nginx html directory
 COPY . /usr/share/nginx/html
 
@@ -14,11 +18,12 @@ RUN rm -f /usr/share/nginx/html/Dockerfile \
     /usr/share/nginx/html/*.ps1 \
     /usr/share/nginx/html/*.yml \
     /usr/share/nginx/html/nginx.conf \
+    /usr/share/nginx/html/entrypoint.sh \
     /usr/share/nginx/html/.gitignore
 
 # Expose port 80
 EXPOSE 80
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Use entrypoint script to inject API key at runtime
+ENTRYPOINT ["/entrypoint.sh"]
 
