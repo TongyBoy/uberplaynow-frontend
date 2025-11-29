@@ -228,9 +228,9 @@ class SessionTimer {
   onTimerExpire() {
     clearInterval(this.intervalId);
     
-    console.log('⏰ Session timer expired');
+    console.log('⏰ 10-minute gameplay timer expired');
 
-    // Mark session as expired
+    // Mark timer as expired
     sessionStorage.setItem('uber_arcade_timer_expired', 'true');
 
     // Show expiration message
@@ -239,6 +239,8 @@ class SessionTimer {
       if (displayElement) {
         displayElement.textContent = 'TIME\'S UP!';
       }
+      this.timerElement.style.color = '#ff0000';
+      this.timerElement.style.background = '#1a0000';
     }
 
     // Call custom callback if set
@@ -246,15 +248,13 @@ class SessionTimer {
       this.onExpireCallback();
     }
 
-    // Redirect to try-again page after 2 seconds (but not on test page)
-    setTimeout(() => {
-      // Don't redirect on test pages
-      if (window.location.pathname.includes('test-game-flow')) {
-        console.log('⚠️ Test page detected - skipping redirect to try-again');
-        return;
-      }
-      window.location.href = '/try-again';
-    }, 2000);
+    // NOTE: Do NOT redirect immediately
+    // Player has 5 more minutes (buffer) to finish current game and claim voucher
+    // Session will expire after 15 minutes total (handled by backend)
+    // Backend will return "Session has expired" error, which redirects to alternative page
+    
+    console.log('⚠️ Player has 5 more minutes to finish game and claim voucher');
+    console.log('⚠️ Session will expire at 15 minutes (backend enforced)');
   }
 
   /**

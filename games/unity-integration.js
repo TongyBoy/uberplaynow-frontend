@@ -73,18 +73,21 @@ async function OnGameComplete(gameType, score) {
     
     // Check if session expired
     if (error.message.includes('Session has expired') || error.message.includes('Session is no longer active')) {
-      console.error('⏰ [Unity Bridge] Session expired - redirecting to try-again page');
+      console.error('⏰ [Unity Bridge] Session expired (15 min) - redirecting to alternative page');
       
       // Clear session storage
       sessionStorage.removeItem('uber_arcade_session_id');
+      sessionStorage.removeItem('uber_arcade_session_token');
       sessionStorage.removeItem('uber_arcade_verified');
+      sessionStorage.removeItem('uber_arcade_timer_start');
+      sessionStorage.removeItem('uber_arcade_timer_expired');
       
       // Show user-friendly message before redirect
-      alert('Your game session has expired.\n\nYou had 10 minutes to play and 5 extra minutes to claim your voucher.\n\nClick OK to start over.');
+      alert('Your 15-minute session has ended.\n\nYou had 10 minutes to play and 5 extra minutes to claim your voucher.\n\nPlease scan the QR code again to start a new session.');
       
-      // Redirect to try-again page
+      // Redirect to alternative page (session ended)
       setTimeout(() => {
-        window.location.href = '/try-again.html';
+        window.location.href = '/alternative-page';
       }, 500);
       
       return;
