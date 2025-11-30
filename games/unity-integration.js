@@ -102,7 +102,7 @@ async function OnGameComplete(gameType, score) {
       
       // Redirect to alternative page
       setTimeout(() => {
-        window.location.href = '/alternative-page.html';
+        window.location.href = '/alternative-page';
       }, 500);
       
       return;

@@ -529,6 +529,16 @@ strong {
     line-height: 1.8rem;
   }
 
+  /* Exhausted message - same styling as winner */
+  .p-white.c-align.exhausted-message {
+    text-wrap: balance;
+    width: 90%;
+    font-family: Ubermove, Arial, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.8rem;
+  }
+
   .p-white.wrap {
     margin-top: 0;
   }
@@ -740,6 +750,7 @@ strong {
   }
 
   /* Exhausted styles for all prize tiers */
+  /* Exhausted tiers - grey color only on parent */
   .prize-one.exhausted,
   .prize-two.exhausted,
   .prize-three.exhausted {
@@ -747,6 +758,19 @@ strong {
     -webkit-text-decoration-skip-ink: auto;
     text-decoration-skip-ink: auto;
     text-decoration: line-through;
+  }
+
+  /* Remove strikethrough and underline from exhausted message spans */
+  .prize-one.exhausted .text-span,
+  .prize-two.exhausted .text-span-2,
+  .prize-three.exhausted .text-span-3 {
+    text-decoration: none !important;
+    color: #fff; /* Keep white color for better readability */
+  }
+
+  /* Remove underline from exhausted message text */
+  .exhausted-message {
+    text-decoration: none !important;
   }
 
   .prize-three {
@@ -1203,6 +1227,12 @@ strong {
   }
 
   .p-white.c-align.winner {
+    font-size: 1.2rem;
+    line-height: 1.5rem;
+  }
+
+  /* Exhausted message - match winner for mobile */
+  .p-white.c-align.exhausted-message {
     font-size: 1.2rem;
     line-height: 1.5rem;
   }

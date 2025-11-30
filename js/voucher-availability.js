@@ -64,24 +64,38 @@ class VoucherAvailabilityChecker {
       const discountSpan = prizeElement.querySelector('.text-span, .text-span-2, .text-span-3');
       
       if (!tierData.available) {
-        // Mark as exhausted - add strikethrough
-        prizeElement.classList.add('exhausted');
+        // Get the main prize text (before the <br>)
+        const prizeHTML = prizeElement.innerHTML;
         
-        // Replace the span text with "No promo codes left..."
-        if (discountSpan) {
-          // Store original text if not already stored
-          if (!discountSpan.dataset.originalText) {
-            discountSpan.dataset.originalText = discountSpan.textContent;
-          }
-          discountSpan.textContent = 'No promo codes left...';
+        // Find the text before <br> and the span
+        const brIndex = prizeHTML.indexOf('<br>');
+        if (brIndex > 0 && discountSpan) {
+          const mainPrizeText = prizeHTML.substring(0, brIndex).trim();
+          
+          // Restructure: wrap main text in a span with strikethrough
+          prizeElement.innerHTML = `
+            <span style="text-decoration: line-through;">${mainPrizeText}</span>
+            <br>
+            <span class="${discountSpan.className}" style="text-decoration: none; color: var(--_colors---grey);">No promo codes left. Aim for another tier</span>
+          `;
+          
+          // Add grey color to parent (but not strikethrough)
+          prizeElement.style.color = 'var(--_colors---grey)';
+          prizeElement.classList.add('exhausted');
+          // Remove strikethrough from parent since we're applying it to inner span
+          prizeElement.style.textDecoration = 'none';
         }
       } else {
-        // Remove exhausted class
+        // Remove exhausted class and restore original styling
         prizeElement.classList.remove('exhausted');
+        prizeElement.style.color = '';
+        prizeElement.style.textDecoration = '';
         
         // Restore original text if it was changed
         if (discountSpan && discountSpan.dataset.originalText) {
           discountSpan.textContent = discountSpan.dataset.originalText;
+          discountSpan.style.textDecoration = '';
+          discountSpan.style.color = '';
         }
       }
     });

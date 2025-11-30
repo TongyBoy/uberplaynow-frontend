@@ -61,6 +61,7 @@
             <div class="border bottom snake"></div>
             <div class="button-text snake">PLAY NOW</div>
           </a>
+          <a href="terms-and-conditions" class="link">Terms &amp; Conditions</a>
           <p class="p-white c-align">Authority numbers: [TP/00224].</p>
         </div>
       </div>
@@ -89,7 +90,7 @@
           
           if (sessionId) {
             // Navigate to local Unity game with session ID
-            window.location.href = `games/Snake/index.html?sessionId=${sessionId}`;
+            window.location.href = `games/Snake/?sessionId=${sessionId}`;
           } else {
             console.error('No session ID found');
             alert('Session not found. Please start from the main page.');

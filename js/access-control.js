@@ -6,7 +6,7 @@
 class AccessControl {
   constructor() {
     this.REQUIRED_REF_ID = 'uberClick';
-    this.ALTERNATIVE_PAGE = '/alternative-page.html';
+    this.ALTERNATIVE_PAGE = '/alternative-pagedock';
     this.allowedPages = ['/', '/index.html', '/index', '/play', '/play/', '/play/index.html'];
     
     console.log('🔒 [Access Control] PRODUCTION MODE');
