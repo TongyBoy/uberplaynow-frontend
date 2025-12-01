@@ -260,6 +260,14 @@
     .badge.claimed { background: #fff3cd; color: #856404; }
     .badge.redeemed { background: #d1ecf1; color: #0c5460; }
     .badge.exhausted { background: #f8d7da; color: #721c24; }
+
+    tr:hover {
+      background: #f8f9fa !important;
+    }
+
+    tbody tr {
+      transition: background 0.2s;
+    }
   </style>
 </head>
 <body>
@@ -314,6 +322,18 @@
         <div id="recent-activity"></div>
       </div>
 
+      <!-- Top Scores by Game -->
+      <div class="tier-section">
+        <h2>🏆 Top Scores by Game</h2>
+        <div id="top-scores"></div>
+      </div>
+
+      <!-- Security Monitoring -->
+      <div class="tier-section">
+        <h2>🔒 Security Monitoring</h2>
+        <div id="security-monitoring"></div>
+      </div>
+
       <div class="timestamp" id="last-updated"></div>
     </div>
   </div>
@@ -361,18 +381,35 @@
 
     async function loadStats() {
       try {
-        const response = await fetch('/api/admin/vouchers/stats', {
-          headers: {
-            'Authorization': `Bearer ${adminPassword}`
-          }
-        });
+        const [statsResponse, scoresResponse, securityResponse] = await Promise.all([
+          fetch('/api/admin/vouchers/stats', {
+            headers: {
+              'Authorization': `Bearer ${adminPassword}`
+            }
+          }),
+          fetch('/api/admin/scores/top?limit=50', {
+            headers: {
+              'Authorization': `Bearer ${adminPassword}`
+            }
+          }),
+          fetch('/api/admin/security/suspicious', {
+            headers: {
+              'Authorization': `Bearer ${adminPassword}`
+            }
+          })
+        ]);
 
-        if (!response.ok) {
+        if (!statsResponse.ok || !scoresResponse.ok || !securityResponse.ok) {
           throw new Error('Unauthorized');
         }
 
-        const data = await response.json();
+        const data = await statsResponse.json();
+        const scoresData = await scoresResponse.json();
+        const securityData = await securityResponse.json();
+        
         displayStats(data);
+        displayTopScores(scoresData);
+        displaySecurityMonitoring(securityData);
       } catch (error) {
         console.error('Error loading stats:', error);
         throw error;
@@ -460,6 +497,198 @@
 
       // Update timestamp
       document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+    }
+
+    function displayTopScores(data) {
+      const scores = data.scores || data;
+      
+      if (scores && scores.length > 0) {
+        // Group scores by game type
+        const gameTypes = {
+          'snake': { name: '🐍 Snake', scores: [] },
+          'brick_breaker': { name: '🧱 Brick Breaker', scores: [] },
+          'meteors': { name: '☄️ Meteors', scores: [] }
+        };
+        
+        scores.forEach(s => {
+          if (gameTypes[s.game_type]) {
+            gameTypes[s.game_type].scores.push(s);
+          }
+        });
+        
+        let html = '';
+        
+        // Create a table for each game type
+        Object.keys(gameTypes).forEach(gameType => {
+          const game = gameTypes[gameType];
+          const gameScores = game.scores;
+          
+          if (gameScores.length === 0) {
+            return; // Skip if no scores for this game
+          }
+          
+          html += `
+            <div style="margin-bottom: 30px;">
+              <h3 style="color: #333; margin-bottom: 15px; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <span>${game.name}</span>
+                <span style="font-size: 14px; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px;">${gameScores.length} scores</span>
+              </h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 60px; text-align: center;">Rank</th>
+                    <th>Session ID</th>
+                    <th style="text-align: right;">Score</th>
+                    <th>Tier Earned</th>
+                    <th>Discount</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${gameScores.map((s, index) => {
+                    const rank = index + 1;
+                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                    const tierBadge = s.tier ? `<span class="badge tier${s.tier}" style="background: ${s.tier === 1 ? '#e3f2fd' : s.tier === 2 ? '#fff3e0' : '#ffebee'}; color: ${s.tier === 1 ? '#1976d2' : s.tier === 2 ? '#f57c00' : '#c62828'};">Tier ${s.tier}</span>` : '-';
+                    const sessionId = s.session_id || s.device_id || 'Unknown';
+                    const shortSessionId = sessionId.length > 8 ? sessionId.substring(0, 8) + '...' : sessionId;
+                    
+                    return `
+                      <tr style="${rank <= 3 ? 'background: #fffbf0;' : ''}">
+                        <td style="text-align: center; font-weight: 700; font-size: 16px;">${medal} ${rank}</td>
+                        <td><code style="background: #f8f9fa; padding: 4px 8px; border-radius: 4px; font-size: 12px;" title="${sessionId}">${shortSessionId}</code></td>
+                        <td style="text-align: right; font-weight: 600; color: #667eea; font-size: 18px;">${(s.score || 0).toLocaleString()}</td>
+                        <td>${tierBadge}</td>
+                        <td style="font-weight: 600;">${s.discount_percent ? s.discount_percent + '%' : '-'}</td>
+                        <td style="color: #666; font-size: 13px;">${s.created_at || s.played_at ? new Date(s.created_at || s.played_at).toLocaleString() : '-'}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        });
+        
+        document.getElementById('top-scores').innerHTML = html;
+      } else {
+        document.getElementById('top-scores').innerHTML = '<p style="color: #666; text-align: center;">No scores yet</p>';
+      }
+    }
+
+    function displaySecurityMonitoring(data) {
+      const { patterns, loggedActivity, recentActivity } = data;
+      
+      let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">';
+      
+      // High device sessions
+      if (patterns.highDeviceSessions && patterns.highDeviceSessions.length > 0) {
+        html += `
+          <div style="background: #fff3cd; padding: 20px; border-radius: 8px; border-left: 4px solid #ffc107;">
+            <h3 style="color: #856404; margin-bottom: 10px;">⚠️ High Device Activity</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">${patterns.highDeviceSessions.length} devices with 14+ sessions today</p>
+            <div style="max-height: 200px; overflow-y: auto;">
+              ${patterns.highDeviceSessions.slice(0, 5).map(d => `
+                <div style="background: white; padding: 10px; margin-bottom: 5px; border-radius: 4px; font-size: 12px;">
+                  <strong>${d.device_id.substring(0, 20)}...</strong><br>
+                  Sessions: ${d.session_count} | IPs: ${d.unique_ips}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      // High IP sessions
+      if (patterns.highIPSessions && patterns.highIPSessions.length > 0) {
+        html += `
+          <div style="background: #f8d7da; padding: 20px; border-radius: 8px; border-left: 4px solid #dc3545;">
+            <h3 style="color: #721c24; margin-bottom: 10px;">🚨 High IP Activity</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">${patterns.highIPSessions.length} IPs with 70+ sessions today</p>
+            <div style="max-height: 200px; overflow-y: auto;">
+              ${patterns.highIPSessions.slice(0, 5).map(ip => `
+                <div style="background: white; padding: 10px; margin-bottom: 5px; border-radius: 4px; font-size: 12px;">
+                  <strong>${ip.ip_address}</strong><br>
+                  Sessions: ${ip.session_count} | Devices: ${ip.unique_devices}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Sessions with no plays
+      if (patterns.sessionsNoPlays && patterns.sessionsNoPlays.length > 0) {
+        html += `
+          <div style="background: #d1ecf1; padding: 20px; border-radius: 8px; border-left: 4px solid #17a2b8;">
+            <h3 style="color: #0c5460; margin-bottom: 10px;">🤔 Sessions Without Plays</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">${patterns.sessionsNoPlays.length} devices created sessions but never played</p>
+            <div style="max-height: 200px; overflow-y: auto;">
+              ${patterns.sessionsNoPlays.slice(0, 5).map(s => `
+                <div style="background: white; padding: 10px; margin-bottom: 5px; border-radius: 4px; font-size: 12px;">
+                  Device: ${s.device_id.substring(0, 20)}... | Sessions: ${s.session_count}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Suspicious scores
+      if (patterns.suspiciousScores && patterns.suspiciousScores.length > 0) {
+        html += `
+          <div style="background: #e2e3e5; padding: 20px; border-radius: 8px; border-left: 4px solid #6c757d;">
+            <h3 style="color: #383d41; margin-bottom: 10px;">🎮 Suspicious Scores</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">${patterns.suspiciousScores.length} scores with unusual patterns</p>
+            <div style="max-height: 200px; overflow-y: auto;">
+              ${patterns.suspiciousScores.slice(0, 5).map(s => `
+                <div style="background: white; padding: 10px; margin-bottom: 5px; border-radius: 4px; font-size: 12px;">
+                  ${s.game_type}: ${s.score} (${s.duration_seconds}s) - ${s.device_id.substring(0, 15)}...
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
+      
+      // Summary statistics
+      if (loggedActivity && loggedActivity.length > 0) {
+        html += `
+          <h3 style="color: #333; margin-top: 20px; margin-bottom: 10px;">Logged Security Events (Today)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Event Type</th>
+                <th>Count</th>
+                <th>Last Occurred</th>
+                <th>Unreviewed</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${loggedActivity.map(a => `
+                <tr>
+                  <td><strong>${a.activity_type.replace(/_/g, ' ')}</strong></td>
+                  <td>${a.count}</td>
+                  <td style="font-size: 13px;">${new Date(a.last_occurred).toLocaleString()}</td>
+                  <td><span class="badge ${a.unreviewed > 0 ? 'exhausted' : 'available'}">${a.unreviewed}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+      
+      // Show all clear if no issues
+      if (!patterns.highDeviceSessions?.length && 
+          !patterns.highIPSessions?.length && 
+          !patterns.sessionsNoPlays?.length && 
+          !patterns.suspiciousScores?.length &&
+          !loggedActivity?.length) {
+        html = '<div style="text-align: center; padding: 40px; color: #27ae60;"><h2>✅ All Clear</h2><p>No suspicious activity detected</p></div>';
+      }
+      
+      document.getElementById('security-monitoring').innerHTML = html;
     }
 
     // Auto-refresh every 30 seconds when logged in

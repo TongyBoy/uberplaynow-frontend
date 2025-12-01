@@ -34,9 +34,14 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
         console.log('[Result Handler] Attempting to fetch from API...');
         fetchLatestResultFromAPI();
       } else {
-        console.warn('[Result Handler] No active session - redirecting to alternative page');
+        console.warn('[Result Handler] No active session - redirecting');
+        
+        // Check if timer expired
+        const timerExpired = sessionStorage.getItem('uber_arcade_timer_expired') === 'true';
+        const redirectUrl = timerExpired ? '/timeout' : '/alternative-page';
+        
         setTimeout(() => {
-          window.location.href = '/alternative-page';
+          window.location.href = redirectUrl;
         }, 2000);
       }
       return;
@@ -122,13 +127,24 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
         displayGameResult(result);
         setupVoucherClaim(result.voucher);
       } else {
-        console.warn('[Result Handler] No vouchers found for session - redirecting to alternative page');
-        window.location.href = '/alternative-page';
+        console.warn('[Result Handler] No vouchers found for session - redirecting');
+        
+        // Check if timer expired
+        const timerExpired = sessionStorage.getItem('uber_arcade_timer_expired') === 'true';
+        window.location.href = timerExpired ? '/timeout' : '/alternative-page';
       }
 
     } catch (error) {
       console.error('[Result Handler] Error fetching from API:', error);
-      window.location.href = '/alternative-page';
+      
+      // Check if timer expired - redirect to timeout page
+      const timerExpired = sessionStorage.getItem('uber_arcade_timer_expired') === 'true';
+      if (timerExpired) {
+        console.log('[Result Handler] Timer expired - redirecting to timeout page');
+        window.location.href = '/timeout';
+      } else {
+        window.location.href = '/alternative-page';
+      }
     }
   }
 

@@ -135,9 +135,10 @@ class SessionTimer {
       z-index: 9999;
       background: #000000;
       color: #ffffff;
-      font-family: 'Courier New', monospace;
-      font-size: 11px;
+      font-family: Ubermove, Arial, sans-serif;
+      font-size: 13px;
       font-weight: bold;
+      text-transform: uppercase;
       padding: 0 15px 0 10px;
       text-align: right;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
