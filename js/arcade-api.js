@@ -5,11 +5,32 @@
 
 class UberArcadeAPI {
   constructor() {
-    this.baseURL = window.location.origin + '/api';
+    this.baseURL = this.getApiBaseURL();
     this.sessionId = null;
     this.sessionToken = null;
     this.deviceId = this.getOrCreateDeviceId();
     this.apiKey = this.getApiKey();
+  }
+
+  /**
+   * Get API base URL from meta tag or environment
+   */
+  getApiBaseURL() {
+    // Check for API URL in meta tag (set by backend/config)
+    const metaTag = document.querySelector('meta[name="api-base-url"]');
+    if (metaTag) {
+      return metaTag.getAttribute('content');
+    }
+    
+    // Injected at build/runtime from environment variable
+    // This placeholder gets replaced by entrypoint.sh or build process
+    const injectedURL = '{{API_BASE_URL_PLACEHOLDER}}';
+    if (injectedURL && !injectedURL.includes('PLACEHOLDER')) {
+      return injectedURL;
+    }
+    
+    // Default fallback for local development
+    return window.location.origin + '/api';
   }
 
   /**
