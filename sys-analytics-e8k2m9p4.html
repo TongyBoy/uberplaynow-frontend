@@ -341,6 +341,37 @@
 
   <script>
     let adminPassword = null;
+    let apiBaseURL = '/api'; // Default for local dev
+    let configLoaded = false;
+
+    // Load configuration from config.json
+    async function loadConfig() {
+      try {
+        const response = await fetch('/config.json');
+        if (response.ok) {
+          const config = await response.json();
+          apiBaseURL = config.apiBaseURL || '/api';
+          console.log('✓ Admin dashboard config loaded');
+          console.log('  API Base URL:', apiBaseURL);
+          configLoaded = true;
+        } else {
+          console.warn('Could not load config.json, using default:', apiBaseURL);
+          configLoaded = true;
+        }
+      } catch (error) {
+        console.warn('Error loading config.json, using default:', apiBaseURL, error);
+        configLoaded = true;
+      }
+    }
+
+    // Wait for config to load
+    async function ensureConfigLoaded() {
+      if (configLoaded) return;
+      await loadConfig();
+    }
+
+    // Load config immediately
+    loadConfig();
 
     // Handle Enter key on password input
     document.getElementById('password').addEventListener('keypress', (e) => {
@@ -381,19 +412,22 @@
     }
 
     async function loadStats() {
+      // Wait for config to be loaded
+      await ensureConfigLoaded();
+      
       try {
         const [statsResponse, scoresResponse, securityResponse] = await Promise.all([
-          fetch('/api/admin/vouchers/stats', {
+          fetch(`${apiBaseURL}/admin/vouchers/stats`, {
             headers: {
               'Authorization': `Bearer ${adminPassword}`
             }
           }),
-          fetch('/api/admin/scores/top?limit=50', {
+          fetch(`${apiBaseURL}/admin/scores/top?limit=50`, {
             headers: {
               'Authorization': `Bearer ${adminPassword}`
             }
           }),
-          fetch('/api/admin/security/suspicious', {
+          fetch(`${apiBaseURL}/admin/security/suspicious`, {
             headers: {
               'Authorization': `Bearer ${adminPassword}`
             }
