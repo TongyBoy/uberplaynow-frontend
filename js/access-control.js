@@ -51,6 +51,9 @@ class AccessControl {
       sessionStorage.setItem('uber_arcade_verified', 'true');
       sessionStorage.setItem('uber_arcade_entry_time', Date.now().toString());
       
+      // 🔒 SECURITY: Remove refID from URL to prevent sharing
+      this.cleanUrlParameters();
+      
       return true;
     }
 
@@ -160,6 +163,13 @@ class AccessControl {
         // Set verified flag so other pages know this is a valid session
         sessionStorage.setItem('uber_arcade_verified', 'true');
         sessionStorage.setItem('uber_arcade_entry_time', Date.now().toString());
+        
+        // 🔒 SECURITY: Remove refID from URL to prevent sharing
+        this.cleanUrlParameters();
+        
+        // 🎮 Initialize backend session automatically
+        this.initializeBackendSession();
+        
         return true;
       }
       
@@ -207,6 +217,80 @@ class AccessControl {
     }
     
     return hasAccess;
+  }
+
+  /**
+   * Clean URL parameters (remove refID from address bar)
+   * This prevents users from seeing and sharing the refID
+   */
+  cleanUrlParameters() {
+    try {
+      // Get current URL without query parameters
+      const cleanUrl = window.location.protocol + '//' + 
+                       window.location.host + 
+                       window.location.pathname;
+      
+      // Replace current URL without reloading the page
+      window.history.replaceState({}, document.title, cleanUrl);
+      
+      console.log('🔒 URL cleaned - refID removed from address bar');
+    } catch (error) {
+      console.warn('Could not clean URL parameters:', error);
+    }
+  }
+
+  /**
+   * Initialize backend session automatically when valid refID is detected
+   * This ensures the session exists before user navigates to games
+   */
+  async initializeBackendSession() {
+    try {
+      // Check if session already exists
+      const existingSessionId = sessionStorage.getItem('uber_arcade_session_id');
+      if (existingSessionId) {
+        console.log('✓ Backend session already exists:', existingSessionId);
+        return;
+      }
+
+      console.log('🎮 Initializing backend session...');
+
+      // Wait for UberArcade API to be ready
+      if (typeof window.UberArcade === 'undefined') {
+        console.log('⏳ Waiting for UberArcade API...');
+        await this.waitForAPI();
+      }
+
+      // Initialize session via API
+      if (window.UberArcade && typeof window.UberArcade.initSession === 'function') {
+        await window.UberArcade.initSession();
+        console.log('✅ Backend session created successfully');
+      } else {
+        console.warn('⚠️ UberArcade API not available - session will be created on first game play');
+      }
+    } catch (error) {
+      console.warn('Could not initialize backend session:', error);
+      // Don't fail - session will be created when user plays a game
+    }
+  }
+
+  /**
+   * Wait for UberArcade API to be available
+   */
+  waitForAPI() {
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (typeof window.UberArcade !== 'undefined') {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100);
+
+      // Timeout after 5 seconds
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        resolve();
+      }, 5000);
+    });
   }
 
   /**
