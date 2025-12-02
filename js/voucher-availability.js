@@ -13,9 +13,19 @@ class VoucherAvailabilityChecker {
    */
   async checkAndUpdateUI(containerSelector = null) {
     try {
+      // Wait for config to be loaded
+      if (window.UberArcade && window.UberArcade.ensureConfigLoaded) {
+        await window.UberArcade.ensureConfigLoaded();
+      }
+      
+      if (!window.UberArcade) {
+        console.error('[Voucher Availability] UberArcade API not loaded');
+        return;
+      }
+      
       const availability = await window.UberArcade.checkVoucherAvailability(this.gameType);
       
-      console.log(`Voucher availability for ${this.gameType}:`, availability);
+      console.log(`✓ Voucher availability for ${this.gameType}:`, availability);
 
       // Update tier 1 (10% off)
       this.updateTierUI('tier1', availability.availability.tier1, containerSelector);
@@ -113,18 +123,24 @@ window.addEventListener('DOMContentLoaded', () => {
   if (gameType) {
     if (gameType === 'all') {
       // On about page, check each game in its own section
-      const snakeChecker = new VoucherAvailabilityChecker('snake');
-      snakeChecker.checkAndUpdateUI('.snake-section, .div-block:has(.about-snake-logo)');
-      
-      const meteorsChecker = new VoucherAvailabilityChecker('meteors');
-      meteorsChecker.checkAndUpdateUI('.meteors-section, .div-block:has(.about-meteors-logo)');
-      
-      const brickBreakerChecker = new VoucherAvailabilityChecker('brick_breaker');
-      brickBreakerChecker.checkAndUpdateUI('.brick-breaker-section, .div-block:has(.about-brickbreaker-logo)');
+      // Wait for UberArcade API to be ready
+      setTimeout(() => {
+        const snakeChecker = new VoucherAvailabilityChecker('snake');
+        snakeChecker.checkAndUpdateUI('.snake-section');
+        
+        const meteorsChecker = new VoucherAvailabilityChecker('meteors');
+        meteorsChecker.checkAndUpdateUI('.meteors-section');
+        
+        const brickBreakerChecker = new VoucherAvailabilityChecker('brick_breaker');
+        brickBreakerChecker.checkAndUpdateUI('.brick-breaker-section');
+      }, 500);
     } else {
       // On specific game page
-      const checker = new VoucherAvailabilityChecker(gameType);
-      checker.checkAndUpdateUI();
+      // Wait for UberArcade API to be ready
+      setTimeout(() => {
+        const checker = new VoucherAvailabilityChecker(gameType);
+        checker.checkAndUpdateUI();
+      }, 500);
     }
   }
 });

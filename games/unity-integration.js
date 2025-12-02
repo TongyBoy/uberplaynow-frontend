@@ -6,16 +6,35 @@
 // Global variables to track game state
 let gameStartTime = null;
 let currentGameType = null;
-let unityInstance = null;
+// Note: unityInstance is declared in each game's index.html, not here
+
+/**
+ * Normalize game type to backend format
+ * @param {string} gameType - e.g. 'Snake', 'Brick Breaker', 'Meteors'
+ * @returns {string} - e.g. 'snake', 'brick_breaker', 'meteors'
+ */
+function normalizeGameType(gameType) {
+  const normalized = gameType.toLowerCase().replace(/\s+/g, '_');
+  console.log(`[Unity Bridge] Normalized "${gameType}" → "${normalized}"`);
+  return normalized;
+}
 
 /**
  * Called by Unity when the game starts
- * @param {string} gameType - 'snake', 'brick_breaker', or 'meteors'
+ * @param {string} gameType - 'Snake', 'Brick Breaker', or 'Meteors'
  */
 function OnGameStart(gameType) {
   console.log(`[Unity Bridge] Game started: ${gameType}`);
   gameStartTime = Date.now();
-  currentGameType = gameType;
+  currentGameType = normalizeGameType(gameType);
+  
+  // Start the 10-minute countdown timer
+  if (window.SessionTimer) {
+    window.SessionTimer.start();
+    console.log('[Unity Bridge] Session timer started');
+  } else {
+    console.error('[Unity Bridge] SessionTimer not found!');
+  }
   
   // Track analytics
   if (window.UberArcade) {
@@ -28,22 +47,23 @@ function OnGameStart(gameType) {
 
 /**
  * Called by Unity when the game ends
- * @param {string} gameType - 'snake', 'brick_breaker', or 'meteors'
+ * @param {string} gameType - 'Snake', 'Brick Breaker', or 'Meteors'
  * @param {number} score - Final score
  */
 async function OnGameComplete(gameType, score) {
   console.log(`[Unity Bridge] Game completed: ${gameType}, Score: ${score}`);
   
   const endTime = Date.now();
+  const normalizedGameType = normalizeGameType(gameType);
   
   try {
     if (!window.UberArcade) {
       throw new Error('UberArcade API not initialized');
     }
 
-    // Submit score to backend
+    // Submit score to backend (use normalized game type)
     const result = await window.UberArcade.submitScore(
-      gameType,
+      normalizedGameType,
       score,
       gameStartTime,
       endTime
@@ -59,8 +79,8 @@ async function OnGameComplete(gameType, score) {
     }
 
     // Send result back to Unity
-    if (unityInstance) {
-      unityInstance.SendMessage(
+    if (window.unityInstance) {
+      window.unityInstance.SendMessage(
         'GameManager', 
         'OnScoreSubmitted', 
         JSON.stringify(result)
@@ -109,8 +129,8 @@ async function OnGameComplete(gameType, score) {
     }
     
     // Notify Unity of error
-    if (unityInstance) {
-      unityInstance.SendMessage(
+    if (window.unityInstance) {
+      window.unityInstance.SendMessage(
         'GameManager',
         'OnScoreSubmissionError',
         error.message
@@ -147,7 +167,7 @@ function ShowVoucherToPlayer(voucherResult) {
   // Also store the complete game result with voucher
   const gameResult = {
     score: voucherResult.score,
-    gameType: voucherResult.gameType || currentGameType,
+    gameType: currentGameType, // Already normalized
     tier: voucherResult.tier || voucher.tier,
     qualifies: true,
     tierName: voucherData.tierName,
@@ -179,7 +199,7 @@ function ShowResultToPlayer(result) {
   // Store complete game result with score and tier info
   const gameResult = {
     score: result.score,
-    gameType: result.gameType || currentGameType,
+    gameType: currentGameType, // Already normalized
     tier: result.tier,
     qualifies: result.qualifies,
     tierName: result.tierName,
@@ -233,7 +253,8 @@ function GetSessionInfo() {
  */
 function SetUnityInstance(instance) {
   console.log('[Unity Bridge] Unity instance registered');
-  unityInstance = instance;
+  // Store globally so other functions can access it
+  window.unityInstance = instance;
 }
 
 /**

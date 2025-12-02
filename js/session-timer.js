@@ -122,6 +122,13 @@ class SessionTimer {
       return;
     }
 
+    // Wait for body to be available
+    if (!document.body) {
+      console.warn('[Timer] Body not ready, waiting...');
+      setTimeout(() => this.createTimerElement(), 50);
+      return;
+    }
+
     // Create timer container - narrow black bar at top (in document flow)
     const timerContainer = document.createElement('div');
     timerContainer.id = 'session-timer';

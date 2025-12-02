@@ -32,6 +32,11 @@
 
   gtag('config', 'G-3LSH7XN419');
 </script>
+
+  <!-- 🎮 Uber Arcade API Integration -->
+  <script src="../../js/arcade-api.js"></script>
+  <script src="../../js/session-timer.js"></script>
+  <script src="../unity-integration.js"></script>
 </head>
 
 <body>
@@ -56,6 +61,31 @@
     </div>
   </div>
 
+  <!-- 🔹 Terms & Conditions Link -->
+  <div id="terms-footer" style="
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9998;
+    text-align: center;
+  ">
+    <a href="../../terms-and-conditions.html" style="
+      color: #ffffff;
+      text-decoration: underline;
+      font-size: 12px;
+      font-family: Arial, sans-serif;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    ">Terms &amp; Conditions</a>
+    <p style="
+      color: #ffffff;
+      font-size: 11px;
+      margin: 5px 0 0 0;
+      font-family: Arial, sans-serif;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    ">Authority number: TP/00224</p>
+  </div>
+
 
 <script>
 
@@ -69,30 +99,34 @@ function OnUnitySendGameAnalytics(eventName, data) {
     }
 }
 
-function OnUnitySendScore(score, playtime,isRepeatUser) {
-    console.log("[HTML] Unity sent score and product name", score , GameName);
+function OnUnitySendScore(score, playtime, isRepeatUser) {
+    console.log("[HTML] Unity sent score and product name", score, GameName);
     
-
+    // Google Analytics tracking
     gtag('event', 'game_session_end', {
-    game_id: GameName,
-    duration_seconds: playtime,
-    repeat_user: isRepeatUser 
-  }); 
+        game_id: GameName,
+        duration_seconds: playtime,
+        repeat_user: isRepeatUser 
+    }); 
 
     gtag('event', 'player_score', {
         game_id: GameName,
         score_value: score
     });
 
-
-
-  if(isRepeatUser){
-    gtag('event', 'Replay_Game', {game_id: GameName});
-  }
-
+    if (isRepeatUser) {
+        gtag('event', 'Replay_Game', {game_id: GameName});
+    }
 
     gtag('event', 'Game_Closed', {game_id: GameName});
-
+    
+    // 🎮 Submit to Uber Arcade backend via unity-integration.js
+    if (window.OnGameComplete) {
+        console.log('[Unity Bridge] Calling OnGameComplete with score:', score);
+        window.OnGameComplete('Meteors', score);
+    } else {
+        console.error('[Unity Bridge] OnGameComplete function not found!');
+    }
 }
 
 function OnUnityShowAd() {
@@ -185,6 +219,17 @@ function OnUnityReceivePlayerData(name, score) {
         }
 
         unityInstance=instance
+        
+        // Register Unity instance with Uber Arcade bridge
+        if (window.SetUnityInstance) {
+          window.SetUnityInstance(instance);
+        }
+        
+        // Notify Uber Arcade that game has started (starts timer)
+        if (window.OnGameStart) {
+          window.OnGameStart('Meteors');
+        }
+        
         loader.style.opacity = 0;
         setTimeout(() => loader.style.display = "none", 400);
       }).catch(console.error);
