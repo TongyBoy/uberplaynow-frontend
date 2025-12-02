@@ -91,7 +91,7 @@
           
           if (sessionId) {
             // Navigate to local Unity game with session ID
-            window.location.href = `games/Asteroid/index.html?sessionId=${sessionId}`;
+            window.location.href = `games/Asteroid/?sessionId=${sessionId}`;
           } else {
             console.error('No session ID found');
             alert('Session not found. Please start from the main page.');
