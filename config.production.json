@@ -1,0 +1,6 @@
+{
+  "apiBaseURL": "https://api.playnow.game",
+  "apiKey": "REPLACE_WITH_YOUR_PRODUCTION_API_KEY",
+  "environment": "production"
+}
+

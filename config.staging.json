@@ -1,0 +1,6 @@
+{
+  "apiBaseURL": "https://api-staging.playnow.game",
+  "apiKey": "REPLACE_WITH_YOUR_STAGING_API_KEY",
+  "environment": "staging"
+}
+

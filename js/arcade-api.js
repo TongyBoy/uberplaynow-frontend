@@ -5,47 +5,58 @@
 
 class UberArcadeAPI {
   constructor() {
-    this.baseURL = this.getApiBaseURL();
+    this.config = null;
+    this.baseURL = null;
     this.sessionId = null;
     this.sessionToken = null;
     this.deviceId = this.getOrCreateDeviceId();
-    this.apiKey = this.getApiKey();
+    this.apiKey = null;
+    this.configLoaded = this.loadConfig();
   }
 
   /**
-   * Get API base URL from meta tag or environment
+   * Load configuration from config.json
    */
-  getApiBaseURL() {
-    // Check for API URL in meta tag (set by backend/config)
-    const metaTag = document.querySelector('meta[name="api-base-url"]');
-    if (metaTag) {
-      return metaTag.getAttribute('content');
+  async loadConfig() {
+    try {
+      const response = await fetch('/config.json');
+      if (!response.ok) {
+        throw new Error('Failed to load config.json');
+      }
+      
+      this.config = await response.json();
+      this.baseURL = this.config.apiBaseURL || (window.location.origin + '/api');
+      this.apiKey = this.config.apiKey || '';
+      
+      console.log('✓ Configuration loaded from config.json');
+      console.log('  API Base URL:', this.baseURL);
+      console.log('  Environment:', this.config.environment || 'not specified');
+      
+      return true;
+    } catch (error) {
+      console.warn('⚠️ Could not load config.json, using defaults:', error.message);
+      
+      // Fallback to defaults
+      this.baseURL = window.location.origin + '/api';
+      this.apiKey = '';
+      this.config = {
+        apiBaseURL: this.baseURL,
+        apiKey: this.apiKey,
+        environment: 'unknown'
+      };
+      
+      return false;
     }
-    
-    // Injected at build/runtime from environment variable
-    // This placeholder gets replaced by entrypoint.sh or build process
-    const injectedURL = '{{API_BASE_URL_PLACEHOLDER}}';
-    if (injectedURL && !injectedURL.includes('PLACEHOLDER')) {
-      return injectedURL;
-    }
-    
-    // Default fallback for local development
-    return window.location.origin + '/api';
   }
 
   /**
-   * Get API key from meta tag or environment
+   * Wait for config to be loaded before making API calls
    */
-  getApiKey() {
-    // Check for API key in meta tag (set by backend/config)
-    const metaTag = document.querySelector('meta[name="api-key"]');
-    if (metaTag) {
-      return metaTag.getAttribute('content');
+  async ensureConfigLoaded() {
+    if (this.config) {
+      return;
     }
-    
-    // Injected at build/runtime from environment variable
-    // This placeholder gets replaced by entrypoint.sh
-    return '{{API_KEY_PLACEHOLDER}}';
+    await this.configLoaded;
   }
 
   /**
@@ -95,6 +106,9 @@ class UberArcadeAPI {
    * Initialize a new gaming session
    */
   async initSession() {
+    // Wait for config to be loaded
+    await this.ensureConfigLoaded();
+    
     try {
       const response = await fetch(`${this.baseURL}/sessions`, {
         method: 'POST',
