@@ -2,7 +2,6 @@
 <html lang="en-us">
 <head>
   <meta charset="utf-8">
-  <meta name="robots" content="noindex, nofollow">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="style.css">
@@ -16,13 +15,23 @@
   </style>
 
     <!-- GA4 Script -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1FKDS183PH"></script>
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-1FKDS183PH"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-1FKDS183PH');
-  </script>
+  </script> -->
+  <!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3LSH7XN419"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3LSH7XN419');
+</script>
 </head>
 
 <body>
@@ -63,26 +72,27 @@ function OnUnitySendGameAnalytics(eventName, data) {
 function OnUnitySendScore(score, playtime,isRepeatUser) {
     console.log("[HTML] Unity sent score and product name", score , GameName);
     
-    // Send to Google Analytics
+
     gtag('event', 'game_session_end', {
     game_id: GameName,
     duration_seconds: playtime,
     repeat_user: isRepeatUser 
   }); 
 
+    gtag('event', 'player_score', {
+        game_id: GameName,
+        score_value: score
+    });
+
+
+
   if(isRepeatUser){
     gtag('event', 'Replay_Game', {game_id: GameName});
   }
 
+
     gtag('event', 'Game_Closed', {game_id: GameName});
-    
-    // 🎮 NEW: Send to Uber Arcade backend
-    if (window.OnGameComplete) {
-      console.log('[Unity Bridge] Calling OnGameComplete with score:', score);
-      window.OnGameComplete('snake', score);
-    } else {
-      console.error('[Unity Bridge] OnGameComplete function not found!');
-    }
+
 }
 
 function OnUnityShowAd() {
@@ -111,12 +121,6 @@ function OnUnityReceivePlayerData(name, score) {
 </script>
 
 
-  <!-- 🎮 Uber Arcade Integration -->
-  <script src="../../js/access-control.js"></script>
-  <script src="../../js/arcade-api.js"></script>
-  <script src="../../js/session-timer.js"></script>
-  <script src="../unity-integration.js"></script>
-
   <!-- 🔹 Unity Loader Script -->
   <script src="Build/Build.loader.js"></script>
   <script>
@@ -126,7 +130,7 @@ function OnUnityReceivePlayerData(name, score) {
     const rotateOverlay = document.getElementById("rotate-overlay");
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    // unityInstance is declared in unity-integration.js
+    let unityInstance = null;
     let unityLoaded = false;
 
     // 🔹 Resize Canvas for mobile/desktop
@@ -181,17 +185,6 @@ function OnUnityReceivePlayerData(name, score) {
         }
 
         unityInstance=instance
-        
-        // Register Unity instance with Uber Arcade bridge
-        if (window.SetUnityInstance) {
-          window.SetUnityInstance(instance);
-        }
-        
-        // Notify Uber Arcade that game has started
-        if (window.OnGameStart) {
-          window.OnGameStart('snake');
-        }
-        
         loader.style.opacity = 0;
         setTimeout(() => loader.style.display = "none", 400);
       }).catch(console.error);
