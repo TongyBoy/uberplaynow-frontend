@@ -176,14 +176,14 @@ class SessionTimer {
       right: 0;
       width: 100%;
       height: 40px;
-      z-index: 9999;
+      z-index: 99999;
       background: #000000;
       color: #ffffff;
       font-family: Ubermove, Arial, sans-serif;
-      font-size: 14px;
+      font-size: 12px;
       font-weight: bold;
       text-transform: uppercase;
-      padding: 0 15px;
+      padding: 0 10px;
       padding-top: max(env(safe-area-inset-top), 8px);
       text-align: right;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
@@ -192,10 +192,13 @@ class SessionTimer {
       align-items: center;
       justify-content: flex-end;
       line-height: 1;
+      pointer-events: none;
+      box-sizing: border-box;
+      overflow: hidden;
     `;
 
     timerContainer.innerHTML = `
-      <span style="color: #ffffff; margin-right: 8px;">COUNTDOWN</span><span id="timer-display" style="color: #ffffff;">10:00</span>
+      <span style="color: #ffffff; margin-right: 6px; font-size: 11px;">TIME</span><span id="timer-display" style="color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 1px;">10:00</span>
     `;
 
     // Insert at the very beginning of body (not appending to end)

@@ -105,7 +105,7 @@ html, body {
   background: rgba(0,0,0,0.95); /* slight transparency */
   color: #fff;
   font-family: 'Segoe UI', Arial, sans-serif;
-  z-index: 9999;
+  z-index: 9998;
   text-align: center;
   padding: 20px; /* padding so content never clips */
   box-sizing: border-box;
