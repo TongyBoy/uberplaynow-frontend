@@ -44,7 +44,7 @@
     <div class="side-page-container gradient-bg content">
       <div class="side-page-content"><img src="images/Uber-BB-Logo.webp" loading="lazy" sizes="(max-width: 767px) 100vw, 602.9716796875px" srcset="images/4e5bf6d9e23136bb187e7d19ba0b0ab4_Uber-BB-Logo-p-500.webp 500w, images/Uber-BB-Logo.webp 603w" alt="Uber Backseat Arcade Logo" class="uber-bb-logo alt-page">
         <div class="div-block-2">
-          <img src="images/unlucky-player.webp" loading="lazy" alt="UNLUCKY PLAYER!" class="niceworkimage">
+          <img src="images/unluckyplayer.webp" loading="lazy" alt="UNLUCKY PLAYER!" class="niceworkimage">
           <p class="p-white c-align winner">You ran out of time so you didn't unlock a promo code. Book another Uber and try again on your next ride!</p>
         </div>
       </div>
@@ -73,6 +73,14 @@
   <script src="js/arcade-api.js" type="text/javascript"></script>
   <script src="js/uberplaynow.js" type="text/javascript"></script>
   <script>
+    // Disable back button to prevent returning after session expired
+    (function() {
+      history.pushState(null, null, window.location.href);
+      window.addEventListener('popstate', function() {
+        history.pushState(null, null, window.location.href);
+      });
+    })();
+
     // Handle BOOK AN UBER button click
     document.addEventListener('DOMContentLoaded', function() {
       const bookUberButton = document.querySelector('[data-w-id="64c9b983-bb94-d380-21ed-5f962ab42894"]');

@@ -145,10 +145,10 @@ function OnUnityReceivePlayerData(name, score) {
     function resizeCanvas() {
       if (isMobile) {
         canvas.style.position = "fixed";
-        canvas.style.top = "0";
+        canvas.style.top = "40px";
         canvas.style.left = "0";
         canvas.style.width = "100%";
-        canvas.style.height = "100%";
+        canvas.style.height = "calc(100% - 40px)";
         canvas.style.transform = "none";
       } else {
         const aspect = 9 / 16;

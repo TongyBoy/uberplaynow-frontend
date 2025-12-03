@@ -102,6 +102,31 @@ body {
   line-height: 20px;
 }
 
+/* Lock to portrait mode on mobile devices - show rotate message in landscape */
+@media screen and (max-width: 800px) and (orientation: landscape) {
+  body::before {
+    content: "Please rotate your device to portrait mode";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    text-align: center;
+    z-index: 99999;
+    padding: 20px;
+  }
+  
+  body > *:not(script) {
+    display: none !important;
+  }
+}
+
 h1 {
   margin-top: 20px;
   margin-bottom: 10px;

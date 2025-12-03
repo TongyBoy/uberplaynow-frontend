@@ -174,6 +174,22 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
       console.log('[Result Handler] ❌ No voucher - Score not high enough');
     }
 
+    // Update the header image based on whether they won
+    const headerImage = document.querySelector('.niceworkimage');
+    if (headerImage) {
+      if (!result.hasVoucher && !vouchersExhausted) {
+        // Player didn't win - show UNLUCKY PLAYER image
+        headerImage.src = 'images/unluckyplayer.webp';
+        headerImage.alt = 'UNLUCKY PLAYER!';
+        console.log('[Result Handler] 🖼️ Changed to unlucky player image');
+      } else {
+        // Player won - show NICE WORK PLAYER image
+        headerImage.src = 'images/nice-work-player2x.webp';
+        headerImage.alt = 'NICE WORK PLAYER!';
+        console.log('[Result Handler] 🖼️ Showing nice work player image');
+      }
+    }
+
     // Update score and discount text
     const winnerText = document.querySelector('.p-white.c-align.winner');
     const exhaustedText = document.querySelector('.p-white.c-align.exhausted-message');
@@ -200,17 +216,20 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
       if (winnerText) {
         winnerText.style.display = 'block';
         let message = '';
+        let hasVoucherToShow = false;
         
         if (result.hasVoucher && result.voucher && result.voucher.discount) {
           // Player won a voucher - use actual voucher discount
           const discount = result.voucher.discount;
           const maxDiscount = getMaxDiscountForTier(result.tier);
           message = `You scored ${result.score} points and earned a promo code for ${discount}% off your next Uber ride (up to $${maxDiscount} off)!`;
+          hasVoucherToShow = true;
           console.log('[Result Handler] ✅ Updating with voucher message:', message);
         } else if (result.hasVoucher && result.discount) {
           // Fallback to result discount if voucher object doesn't have it
           const maxDiscount = getMaxDiscountForTier(result.tier);
           message = `You scored ${result.score} points and earned a promo code for ${result.discount}% off your next Uber ride (up to $${maxDiscount} off)!`;
+          hasVoucherToShow = true;
           console.log('[Result Handler] ✅ Updating with fallback message:', message);
         } else {
           // Player didn't qualify
@@ -218,7 +237,12 @@ console.log('=== GAME RESULT HANDLER SCRIPT LOADED ===');
           console.log('[Result Handler] ⚠️ Updating with no-voucher message:', message);
         }
         
-        winnerText.innerHTML = message + '<br><span class="text-span-4">Expires 11.59pm 30 December 2025.</span>';
+        // Only add expiry date if player actually has a voucher
+        if (hasVoucherToShow) {
+          winnerText.innerHTML = message + '<br><span class="text-span-4">Expires 11.59pm 30 December 2025.</span>';
+        } else {
+          winnerText.innerHTML = message;
+        }
         console.log('[Result Handler] ✅ Text updated successfully');
       }
       if (exhaustedText) {

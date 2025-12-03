@@ -6,11 +6,14 @@
 class SessionTimer {
   constructor() {
     this.duration = 10 * 60 * 1000; // 10 minutes in milliseconds
+    this.bufferTime = 1 * 60 * 1000; // 1 minute buffer (changed from 5)
+    this.totalDuration = this.duration + this.bufferTime; // 11 minutes total
     this.startTime = null;
     this.timerElement = null;
     this.intervalId = null;
     this.onExpireCallback = null;
     this.isVisible = true;
+    this.hardExpired = false;
     
     this.init();
     this.setupVisibilityHandlers();
@@ -71,26 +74,43 @@ class SessionTimer {
   }
 
   init() {
+    // Check if hard expired - if so, immediately redirect
+    const hardExpired = sessionStorage.getItem('uber_arcade_hard_expired');
+    if (hardExpired === 'true') {
+      console.log('🚨 Session hard expired - redirecting to timeout');
+      window.location.replace('/timeout');
+      return;
+    }
+
     // Check if timer was already started
     const storedStartTime = sessionStorage.getItem('uber_arcade_timer_start');
     
     if (storedStartTime) {
       this.startTime = parseInt(storedStartTime);
       
-      // Check if timer is already expired - if so, clear it instead of auto-redirecting
+      // Check for hard expiration (11 minutes total)
       const elapsed = Date.now() - this.startTime;
-      const remaining = Math.max(0, this.duration - elapsed);
       
-      if (remaining === 0) {
-        console.log('⚠️ Timer was expired, clearing old timer');
-        sessionStorage.removeItem('uber_arcade_timer_start');
-        sessionStorage.removeItem('uber_arcade_timer_expired');
-        this.startTime = null;
+      if (elapsed >= this.totalDuration) {
+        console.log('🚨 HARD EXPIRATION detected on init - redirecting');
+        sessionStorage.setItem('uber_arcade_hard_expired', 'true');
+        window.location.replace('/timeout');
         return;
       }
       
-      this.createTimerElement();
-      this.startCountdown();
+      // Check if 10 minutes expired but still in buffer time
+      const remaining = Math.max(0, this.duration - elapsed);
+      
+      if (remaining === 0 && elapsed < this.totalDuration) {
+        console.log('⚠️ Timer expired, in buffer period');
+        sessionStorage.setItem('uber_arcade_timer_expired', 'true');
+        this.createTimerElement();
+        this.startCountdown();
+        this.startHardExpirationCheck();
+      } else if (remaining > 0) {
+        this.createTimerElement();
+        this.startCountdown();
+      }
     }
   }
 
@@ -113,12 +133,25 @@ class SessionTimer {
   }
 
   /**
+   * Check if timer should be hidden on current page
+   */
+  shouldHideTimer() {
+    const path = window.location.pathname;
+    const hideOnPages = ['/games', '/games.html', '/about', '/about.html', '/terms-and-conditions', '/terms-and-conditions.html'];
+    return hideOnPages.some(page => path.endsWith(page));
+  }
+
+  /**
    * Create the timer UI element
    */
   createTimerElement() {
     // Check if timer already exists
     if (document.getElementById('session-timer')) {
       this.timerElement = document.getElementById('session-timer');
+      // Update visibility based on page
+      if (this.shouldHideTimer()) {
+        this.timerElement.style.display = 'none';
+      }
       return;
     }
 
@@ -132,32 +165,37 @@ class SessionTimer {
     // Create timer container - narrow black bar at top (in document flow)
     const timerContainer = document.createElement('div');
     timerContainer.id = 'session-timer';
+    
+    // Hide timer on specific pages
+    const displayStyle = this.shouldHideTimer() ? 'none' : 'flex';
+    
     timerContainer.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       width: 100%;
-      height: 15px;
+      height: 40px;
       z-index: 9999;
       background: #000000;
       color: #ffffff;
       font-family: Ubermove, Arial, sans-serif;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: bold;
       text-transform: uppercase;
-      padding: 0 15px 0 10px;
+      padding: 0 15px;
+      padding-top: max(env(safe-area-inset-top), 8px);
       text-align: right;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
       margin: 0;
-      display: flex;
+      display: ${displayStyle};
       align-items: center;
       justify-content: flex-end;
-      line-height: 15px;
+      line-height: 1;
     `;
 
     timerContainer.innerHTML = `
-      <span style="color: #ffffff; margin-right: 3px;">COUNTDOWN</span><span id="timer-display" style="color: #ffffff;">10:00</span>
+      <span style="color: #ffffff; margin-right: 8px;">COUNTDOWN</span><span id="timer-display" style="color: #ffffff;">10:00</span>
     `;
 
     // Insert at the very beginning of body (not appending to end)
@@ -256,13 +294,39 @@ class SessionTimer {
       this.onExpireCallback();
     }
 
-    // NOTE: Do NOT redirect immediately
-    // Player has 5 more minutes (buffer) to finish current game and claim voucher
-    // Session will expire after 15 minutes total (handled by backend)
-    // Backend will return "Session has expired" error, which redirects to alternative page
+    // Player has 1 more minute (buffer) to finish current game and claim voucher
+    console.log('⚠️ Player has 1 more minute to finish game and claim voucher');
     
-    console.log('⚠️ Player has 5 more minutes to finish game and claim voucher');
-    console.log('⚠️ Session will expire at 15 minutes (backend enforced)');
+    // Start checking for hard expiration (11 minutes total)
+    this.startHardExpirationCheck();
+  }
+
+  /**
+   * Check for hard expiration after buffer time
+   */
+  startHardExpirationCheck() {
+    const checkInterval = setInterval(() => {
+      const elapsed = Date.now() - this.startTime;
+      
+      // After 11 minutes total (10 + 1 buffer), hard redirect
+      if (elapsed >= this.totalDuration) {
+        clearInterval(checkInterval);
+        this.hardExpired = true;
+        
+        console.log('🚨 HARD EXPIRATION - 11 minutes reached. Redirecting to timeout page...');
+        
+        // Mark as hard expired
+        sessionStorage.setItem('uber_arcade_hard_expired', 'true');
+        
+        // End the session
+        if (window.UberArcade) {
+          window.UberArcade.endSession();
+        }
+        
+        // Redirect to timeout page
+        window.location.replace('/timeout');
+      }
+    }, 1000); // Check every second
   }
 
   /**
